@@ -1,42 +1,49 @@
+// @flow
+/* global __dirname */
+
 import fs from 'fs';
+import {join} from 'path';
 
-// Async file read, better use synchronous for reading just file size?
-// TODO try promise or async func for calc
-// Promise version failed
-function calcFileSize(dir) {
-  let totalSize = 0;
+function calcFileSize() {
+  let path = join(__dirname, '../flow-typed');
+  let sizeList = new Map();
 
-  fs.readdir(dir, (error, result) => {
+  fs.readdir(path, (error, fileNames) => {
     if (error) {
       throw new Error(error);
     }
-    for (var i = 0; i < result.length; i++) {
-      fs.stat(dir + result[i], (error, resultStat) => {
-        if (error) {
-          throw new Error(error);
-        } else {
-          totalSize += resultStat.size;
-          console.log('Hi');
-          console.log('leng', result.length - 1);
-          if (i === result.length - 1) {
-            console.log('Reached return');
-            return totalSize;
-          }
+    sizeList.set('__counter', 0);
+    sizeList.set('__totalSize', 0);
+
+    // We could avoid using for with declaring global counter and
+    // do recursive version
+    for (let fileName of fileNames) {
+      // console.log('fileName', fileName);
+
+      sizeList.set(fileName, null);
+      fs.stat(join(path, fileName), (error, fileStat) => {
+        // Increase counter each time checking file stats
+        sizeList.set(fileName, fileStat.size);
+        let previousCounter = sizeList.get('__counter');
+        let currentCounter = previousCounter + 1;
+        sizeList.set('__counter', currentCounter);
+
+        let previousSize = sizeList.get('__totalSize');
+        let currentSize = previousSize + fileStat.size;
+        sizeList.set('__totalSize', currentSize);
+
+        if (sizeList.get('__counter') === fileNames.length) {
+          sizeList.forEach((size, fileName) => {
+            if (!fileName.startsWith('__')) {
+              console.log(fileName, size);
+            }
+          });
+          console.log('DONE');
+          console.log('Total size =', sizeList.get('__totalSize'));
         }
       });
     }
   });
+  // return sizeList.get('__totalSize');
 }
-
-function calcFileSizeSync(dir) {
-  let totalSize = 0;
-  let result = fs.readdirSync(dir);
-  result.forEach((item) => {
-    let stat = fs.statSync(dir + item);
-    totalSize += stat.size;
-  });
-  return totalSize;
-}
-
-console.log('total ', calcFileSize('./'));
-// console.log('total ', calcFileSizeSync('./'));
+calcFileSize();
