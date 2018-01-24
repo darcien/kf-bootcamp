@@ -1,8 +1,8 @@
 {
-  "name": "Day8",
+  "name": "DayEight",
   "version": "0.1.0",
   "private": true,
-  "description": "Day8",
+  "description": "DayEight",
   "scripts": {
     "start": "webpack-dev-server --content-base assets/",
     "build": "webpack",
