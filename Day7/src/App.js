@@ -23,7 +23,8 @@ function renderButton(name: string) {
 }
 
 function renderAddTask(currentInput: string) {
-  return `<p>New task: <input type="text" value="${currentInput}" name="newTask" onInput="emitEvent('inputChanged', this.value)">
+  return `<p>New task: <input type="text" value="${currentInput}"
+  name="newTask" onBlur="emitEvent('inputChanged', this.value)">
   <button name='addTask' onClick="emitEvent('addTask')">Add task</button></p>`;
   // ${renderButton('addTask')}</p>`;
 }

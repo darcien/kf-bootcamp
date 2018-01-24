@@ -8,7 +8,7 @@ let initialState: State = {
     {id: '5', content: 'Eat oreos', isDone: false},
     {id: '7', content: 'Buy more oreos', isDone: true},
   ],
-  newTask: 'Jump',
+  newTask: '',
 };
 
 export default initialState;

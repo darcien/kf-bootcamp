@@ -2,7 +2,7 @@
 
 import type {State, Todo} from './types/State';
 
-type UpdateFunction = (State) => State;
+type UpdateFunction = (State, ?mixed) => State;
 
 type EventHandlerObject = {
   [eventName: string]: UpdateFunction,
@@ -22,22 +22,19 @@ let eventHandlers: EventHandlerObject = {
   },
   inputChanged: (oldState, inputValue) => {
     if (inputValue) {
-      return {...oldState, newTask: inputValue};
+      return {...oldState, newTask: String(inputValue)};
     }
     return oldState;
   },
   addTask: (oldState) => {
     let {todoItems, newTask} = oldState;
-    if (newTask) {
-      console.log(newTask);
-      let newTodo: Todo = {
-        id: Math.random().toString(10),
-        content: newTask,
-        isDone: false,
-      };
-      todoItems.push(newTodo);
-    }
-    return {...oldState, newTask: ''};
+    let newTodo: Todo = {
+      id: Math.random().toString(10),
+      content: newTask,
+      isDone: false,
+    };
+    let newTodoItems = [...todoItems, newTodo];
+    return {...oldState, todoItems: newTodoItems, newTask: ''};
   },
 };
 
