@@ -35,16 +35,21 @@ export default function App(props: Props) {
   };
 
   let addNewTask = () => {
+    let newInput = state.textInput;
+
     let newTask = {
       id: Math.random().toString(10),
-      content: state.textInput,
+      content: newInput,
       isDone: false,
     };
 
-    let newTodoItems = [...todoItems, newTask];
     // Clear the textInput after adding to todoItems
     let newTextInput = '';
-    setState({...state, todoItems: newTodoItems, textInput: newTextInput});
+    setState({
+      ...state,
+      todoItems: [...todoItems, newTask],
+      textInput: newTextInput,
+    });
   };
 
   let removeTask = (id) => {
