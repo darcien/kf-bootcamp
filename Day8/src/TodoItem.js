@@ -11,11 +11,14 @@ export default function TodoItem(props: Props) {
   let {item, toggleDone, removeTask} = props;
   let content = item.isDone ? <s>{item.content}</s> : item.content;
   return (
-    // <li onClick={() => toggleDone(item.id)}>
-    <li>
-      {content}
-      <button onClick={() => toggleDone(item.id)}>Toggle Done</button>
-      <button onClick={() => removeTask(item.id)}>✖</button>
-    </li>
+    <tr>
+      <td>{content}</td>
+      <td>
+        <button onClick={() => toggleDone(item.id)}>Toggle Done</button>
+      </td>
+      <td>
+        <button onClick={() => removeTask(item.id)}>✖</button>
+      </td>
+    </tr>
   );
 }

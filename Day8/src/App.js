@@ -63,19 +63,33 @@ export default function App(props: Props) {
   };
 
   return (
-    <div>
-      <ul>
-        {todoItems.map((item) => (
-          <TodoItem
-            key={item.id}
-            item={item}
-            toggleDone={toggleDone}
-            removeTask={removeTask}
-          />
-        ))}
-      </ul>
+    <table>
+      {todoItems.map((item) => {
+        if (!item.isDone) {
+          return (
+            <TodoItem
+              key={item.id}
+              item={item}
+              toggleDone={toggleDone}
+              removeTask={removeTask}
+            />
+          );
+        }
+      })}
+      {todoItems.map((item) => {
+        if (item.isDone) {
+          return (
+            <TodoItem
+              key={item.id}
+              item={item}
+              toggleDone={toggleDone}
+              removeTask={removeTask}
+            />
+          );
+        }
+      })}
       <input type="text" value={state.textInput} onInput={textChanged} />
       <button onClick={addNewTask}>Save</button>
-    </div>
+    </table>
   );
 }
