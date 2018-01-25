@@ -62,32 +62,24 @@ export default function App(props: Props) {
     });
   };
 
+  let notDoneItems = todoItems.filter((item) => !item.isDone);
+  let doneItems = todoItems.filter((item) => item.isDone);
+
+  let newTodoItems = [...notDoneItems, ...doneItems];
+
   return (
     <table>
-      {todoItems.map((item) => {
-        if (!item.isDone) {
-          return (
-            <TodoItem
-              key={item.id}
-              item={item}
-              toggleDone={toggleDone}
-              removeTask={removeTask}
-            />
-          );
-        }
+      {newTodoItems.map((item) => {
+        return (
+          <TodoItem
+            key={item.id}
+            item={item}
+            toggleDone={toggleDone}
+            removeTask={removeTask}
+          />
+        );
       })}
-      {todoItems.map((item) => {
-        if (item.isDone) {
-          return (
-            <TodoItem
-              key={item.id}
-              item={item}
-              toggleDone={toggleDone}
-              removeTask={removeTask}
-            />
-          );
-        }
-      })}
+
       <input type="text" value={state.textInput} onInput={textChanged} />
       <button onClick={addNewTask}>Save</button>
     </table>
