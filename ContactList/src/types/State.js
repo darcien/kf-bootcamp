@@ -8,6 +8,7 @@ export type Contact = {
 
 export type State = {
   contacts: Array<Contact>,
-  selectedIndex: number,
   searchValue: string,
+  selectedIndex: number,
+  selectedContact: Contact,
 };

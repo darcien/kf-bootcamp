@@ -1,13 +1,55 @@
 // @flow
+import React, {Component} from 'react';
+import ListView from './ListView';
+import DetailView from './DetailView';
 
-import type {Contact} from './types/State';
+import initialContactList from './initialContactList';
 
-let contactList: Array<Contact> = [
-  {id: '10', name: 'Adi', phoneNumber: '123'},
-  {id: '11', name: 'Budi', phoneNumber: '456'},
-  {id: '12', name: 'Codi', phoneNumber: '789'},
-  {id: '13', name: 'Didi', phoneNumber: '101'},
-  {id: '14', name: 'Edi', phoneNumber: '112'},
-];
+import type {Contact, State} from './types/State';
 
-export default contactList;
+type Props = {};
+
+class ContactList extends Component<Props, State> {
+  emptyContact: Contact = {
+    id: '-1',
+    name: 'Bleep',
+    phoneNumber: '',
+  };
+
+  state = {
+    contacts: initialContactList,
+    selectedIndex: 0,
+    searchValue: '',
+    selectedContact: this.emptyContact,
+  };
+
+  initialStyle = {
+    display: 'flex',
+    backgroundColor: 'grey',
+    justifyContent: 'space-around',
+  };
+
+  _onSelectContact = (contact: Contact) => {
+    this.setState({selectedContact: contact});
+  };
+
+  render() {
+    let {contacts, selectedIndex, searchValue, selectedContact} = this.state;
+
+    return (
+      <div style={this.initialStyle}>
+        <ListView
+          contacts={contacts}
+          selectedIndex={selectedIndex}
+          searchValue={searchValue}
+        />
+        <DetailView
+          selectedIndex={selectedIndex}
+          selectedContact={selectedContact}
+        />
+      </div>
+    );
+  }
+}
+
+export default ContactList;
