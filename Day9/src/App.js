@@ -29,15 +29,16 @@ class App extends Component<Props, State> {
     });
   };
 
-  _addItem = (content: string) => {
-    let {todoItems} = this.state;
+  _addItem = () => {
+    let {todoItems, inputValue} = this.state;
     let newItem = {
       id: Math.random().toString(),
-      content,
+      content: inputValue,
       isDone: false,
     };
     this.setState({
       todoItems: [...todoItems, newItem],
+      inputValue: '',
     });
   };
 
