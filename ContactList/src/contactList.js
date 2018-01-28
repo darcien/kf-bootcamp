@@ -9,11 +9,19 @@ import type {Contact, State} from './types/State';
 
 type Props = {};
 
+const appStyle = {
+  display: 'flex',
+  backgroundColor: 'grey',
+  justifyContent: 'space-between',
+  padding: 6,
+};
+
 class ContactList extends Component<Props, State> {
   emptyContact: Contact = {
     id: '-1',
-    name: 'Bleep',
+    name: '',
     phoneNumber: '',
+    githubUsername: '',
   };
 
   state = {
@@ -23,28 +31,59 @@ class ContactList extends Component<Props, State> {
     selectedContact: this.emptyContact,
   };
 
-  initialStyle = {
-    display: 'flex',
-    backgroundColor: 'grey',
-    justifyContent: 'space-around',
+  _onSelectContact = (contact: Contact) => {
+    let {contacts, searchValue} = this.state;
+
+    let filteredContacts;
+    if (searchValue === '') {
+      filteredContacts = contacts;
+    } else {
+      let lowerSearchValue = searchValue.toLowerCase();
+      filteredContacts = contacts.filter((contact) => {
+        return contact.name.toLowerCase().includes(lowerSearchValue);
+      });
+    }
+
+    for (let i = 0; i < filteredContacts.length; i++) {
+      if (filteredContacts[i].id === contact.id) {
+        this.setState({selectedIndex: i, selectedContact: contact});
+      }
+    }
   };
 
-  _onSelectContact = (contact: Contact) => {
-    this.setState({selectedContact: contact});
+  _onSearchChange = (event: Object) => {
+    this.setState({
+      selectedIndex: 0,
+      searchValue: event.target.value,
+      selectedContact: this.emptyContact,
+    });
+  };
+
+  _onRemoveContact = (id: string) => {
+    let {contacts} = this.state;
+
+    let newContacts = contacts.filter((contact) => contact.id !== id);
+
+    this.setState({
+      contacts: newContacts,
+      selectedContact: this.emptyContact,
+    });
   };
 
   render() {
-    let {contacts, selectedIndex, searchValue, selectedContact} = this.state;
+    let {contacts, selectedContact, selectedIndex, searchValue} = this.state;
 
     return (
-      <div style={this.initialStyle}>
+      <div style={appStyle}>
         <ListView
           contacts={contacts}
+          onSearchChange={this._onSearchChange}
+          onSelectContact={this._onSelectContact}
           selectedIndex={selectedIndex}
           searchValue={searchValue}
         />
         <DetailView
-          selectedIndex={selectedIndex}
+          onRemoveContact={this._onRemoveContact}
           selectedContact={selectedContact}
         />
       </div>
