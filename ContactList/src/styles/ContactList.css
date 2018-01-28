@@ -1,0 +1,7 @@
+.container div {
+  display: 'flex';
+  background-color: 'grey';
+  justify-content: 'space-between';
+  padding: 6;
+  overflow: 'hidden';
+}

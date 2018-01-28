@@ -16,20 +16,18 @@ type State = {
 
 const detailViewStyle = {
   flex: '1 0 auto',
-};
-
-const hideButton = {
-  display: 'none',
-};
-
-const initialButton = {
-  display: 'initial',
+  backgroundColor: '#95b9c7',
+  padding: '20px',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-evenly',
 };
 
 const imgStyle = {
   width: '100px',
   height: '100px',
   border: '2px solid black',
+  backgroundColor: 'lightgreen',
 };
 
 class DetailView extends Component<Props, State> {
@@ -42,8 +40,6 @@ class DetailView extends Component<Props, State> {
     let {githubUsername} = nextProps.selectedContact;
     let fetchUrl = 'https://api.github.com/users/' + githubUsername;
 
-    console.log(this.state.githubAvatarUrl);
-
     if (githubUsername !== '') {
       fetch(fetchUrl)
         .then((result) => {
@@ -54,7 +50,6 @@ class DetailView extends Component<Props, State> {
           let name = data.name;
 
           this.setState({githubName: name, githubAvatarUrl: pictureUrl});
-          console.log('Name', name);
         });
     } else {
       this.setState({
@@ -67,25 +62,31 @@ class DetailView extends Component<Props, State> {
     let {selectedContact, onRemoveContact} = this.props;
     let {id, name, phoneNumber} = selectedContact;
 
-    return (
-      <div style={detailViewStyle}>
-        <div className="detail-header">
-          <h2>Details:</h2>
+    let content;
+
+    if (id === '-1') {
+      content = <div className="detail view" style={detailViewStyle} />;
+    } else {
+      content = (
+        <div className="detail view" style={detailViewStyle}>
+          <div className="detail header">
+            <div className="detail picture">
+              <img style={imgStyle} src={this.state.githubAvatarUrl} />
+            </div>
+            <div className="detail name">{name}</div>
+          </div>
+          <div className="detail phoneNumber">📞 {phoneNumber}</div>
+          <button
+            className="detail removeContact"
+            onClick={() => onRemoveContact(id)}
+          >
+            Remove
+          </button>
         </div>
-        <div className="detail-picture">
-          <img style={imgStyle} src={this.state.githubAvatarUrl} />
-        </div>
-        <div className="detail-name">{name}</div>
-        <div className="detail-phoneNumber">{phoneNumber}</div>
-        <button
-          style={id === '-1' ? hideButton : initialButton}
-          className="button-removeContact"
-          onClick={() => onRemoveContact(id)}
-        >
-          Remove
-        </button>
-      </div>
-    );
+      );
+    }
+
+    return content;
   }
 }
 

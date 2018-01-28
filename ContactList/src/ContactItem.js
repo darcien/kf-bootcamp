@@ -12,13 +12,13 @@ type Props = {
 
 const commonStyle = {
   margin: 0,
-  padding: 3,
+  padding: 10,
   borderBottom: '1px solid black',
 };
 
 const selectedStyle = {
   ...commonStyle,
-  paddingLeft: 6,
+  padding: 13,
   margin: 6,
   backgroundColor: 'lightblue',
   borderBottom: '1px dashed blue',
@@ -36,6 +36,7 @@ export default function ContactItem(props: Props) {
 
   return (
     <li
+      key={id}
       style={isSelected ? selectedStyle : unselectedStyle}
       onClick={() => onSelectContact(contact)}
     >

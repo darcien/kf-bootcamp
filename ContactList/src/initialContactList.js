@@ -17,9 +17,9 @@ let initialContactList: Array<Contact> = [
   },
   {
     id: '12',
-    name: 'Hermjne',
-    phoneNumber: '+1 (347) 878-8737',
-    githubUsername: '',
+    name: 'Joshua',
+    phoneNumber: '+62 878-1714-4417',
+    githubUsername: 'ikusa',
   },
   {
     id: '13',
@@ -38,6 +38,36 @@ let initialContactList: Array<Contact> = [
     id: '16',
     name: 'Jorgie',
     phoneNumber: '+62 812-8743-6934',
+    githubUsername: '',
+  },
+  {
+    id: '17',
+    name: 'Audy',
+    phoneNumber: '+62 812-8868-3794',
+    githubUsername: '',
+  },
+  {
+    id: '18',
+    name: 'Listiani',
+    phoneNumber: '+62 812-9036-0320',
+    githubUsername: '',
+  },
+  {
+    id: '19',
+    name: 'Edric',
+    phoneNumber: '+62 813-8019-1357',
+    githubUsername: '',
+  },
+  {
+    id: '20',
+    name: 'Domi',
+    phoneNumber: '+62 813-9403-0507',
+    githubUsername: '',
+  },
+  {
+    id: '21',
+    name: 'Juang',
+    phoneNumber: '+62 857-7436-9672',
     githubUsername: '',
   },
 ];

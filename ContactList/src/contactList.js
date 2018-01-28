@@ -7,13 +7,16 @@ import initialContactList from './initialContactList';
 
 import type {Contact, State} from './types/State';
 
+import style from './styles/ContactList.css';
+
 type Props = {};
 
 const appStyle = {
   display: 'flex',
-  backgroundColor: 'grey',
+  backgroundColor: '#ffe5e5',
   justifyContent: 'space-between',
   padding: 6,
+  overflow: 'hidden',
 };
 
 class ContactList extends Component<Props, State> {
@@ -31,6 +34,17 @@ class ContactList extends Component<Props, State> {
     selectedContact: this.emptyContact,
   };
 
+  componentDidMount() {
+    document.addEventListener('keypress', this._handleKeypress);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keypress', this._handleKeypress);
+  }
+
+  // Still having issues with wrong detail view when selecting contact with
+  // keyboard.
+  // Posstible solution, save filtered contacts in state, performance degradation?
   _onSelectContact = (contact: Contact) => {
     let {contacts, searchValue} = this.state;
 
@@ -52,10 +66,19 @@ class ContactList extends Component<Props, State> {
   };
 
   _onSearchChange = (event: Object) => {
+    let {contacts} = this.state;
+    let newSelectedContact = this.emptyContact;
+    for (let i = 0; i < contacts.length; i++) {
+      if (contacts[i].name.includes(event.target.value)) {
+        newSelectedContact = contacts[i];
+        break;
+      }
+    }
+
     this.setState({
       selectedIndex: 0,
       searchValue: event.target.value,
-      selectedContact: this.emptyContact,
+      selectedContact: newSelectedContact,
     });
   };
 
@@ -70,11 +93,31 @@ class ContactList extends Component<Props, State> {
     });
   };
 
+  _handleKeypress = (event: Object) => {
+    const keyName = event.key;
+
+    let {contacts, selectedIndex} = this.state;
+    let newSelectedIndex = selectedIndex;
+
+    if (keyName === 'ArrowDown') {
+      newSelectedIndex = Math.min(selectedIndex + 1, contacts.length - 1);
+    }
+    if (keyName === 'ArrowUp') {
+      newSelectedIndex = Math.max(selectedIndex - 1, 0);
+    }
+    if (newSelectedIndex !== selectedIndex) {
+      this.setState({
+        selectedIndex: newSelectedIndex,
+        selectedContact: contacts[newSelectedIndex],
+      });
+    }
+  };
+
   render() {
     let {contacts, selectedContact, selectedIndex, searchValue} = this.state;
 
     return (
-      <div style={appStyle}>
+      <div className="container" style={appStyle}>
         <ListView
           contacts={contacts}
           onSearchChange={this._onSearchChange}

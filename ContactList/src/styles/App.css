@@ -1,0 +1,54 @@
+:global div {
+  font: 1em 'Fira Sans', sans-serif;
+}
+
+.container {
+  display: 'flex';
+  background-color: 'lightpink';
+  justify-content: 'space-between';
+  padding: 6;
+  overflow: 'hidden';
+}
+
+:global .detail {
+  padding: 10px;
+}
+
+:global .detail .header {
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+:global .detail .picture {
+  padding-left: 0;
+  display: flex;
+  align-items: center;
+}
+
+:global .detail .name {
+  display: flex;
+  width: 100%;
+  margin: 10px 0;
+  padding-left: 20px;
+  background-color: rgba(255, 255, 255, 0.5);
+  font-size: 1.8em;
+  align-items: center;
+}
+
+:global .detail .phoneNumber {
+  margin: 10px 0;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  min-height: 200px;
+  height: auto;
+  font-size: 1.3em;
+}
+
+:global .detail .removeContact {
+  color: white;
+  border-radius: 4px;
+  background: #ca3c3c;
+  border: none;
+  font-size: 1em;
+}
