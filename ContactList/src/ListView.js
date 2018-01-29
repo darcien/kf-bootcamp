@@ -5,10 +5,10 @@ import type {Contact} from './types/State';
 import ContactItem from './ContactItem';
 
 type Props = {
-  contacts: Array<Contact>,
-  selectedIndex: number,
+  contacts: ?{[string]: Contact},
+  selectedID: ?string,
   onSearchChange: (event: Object) => void,
-  onSelectContact: (contact: Contact) => void,
+  onSelectContact: (id: string) => void,
   searchValue: string,
 };
 
@@ -47,18 +47,40 @@ class ListView extends Component<Props> {
       contacts,
       onSearchChange,
       onSelectContact,
-      selectedIndex,
+      selectedID,
       searchValue,
     } = this.props;
 
-    let filteredContacts;
-    if (searchValue === '') {
-      filteredContacts = contacts;
-    } else {
-      let lowerSearchValue = searchValue.toLowerCase();
-      filteredContacts = contacts.filter((contact) => {
-        return contact.name.toLowerCase().includes(lowerSearchValue);
-      });
+    let contactList = [];
+
+    if (contacts) {
+      let contactsID = Object.keys(contacts);
+
+      let filteredContacts = {};
+      if (searchValue === '') {
+        filteredContacts = contacts;
+      } else {
+        let lowerSearchValue = searchValue.toLowerCase();
+        for (let id of contactsID) {
+          if (contacts[id].name.toLowerCase().includes(lowerSearchValue)) {
+            filteredContacts[id] = contacts[id];
+          }
+        }
+      }
+
+      let filteredContactsID = Object.keys(filteredContacts);
+
+      for (let id of filteredContactsID) {
+        contactList.push(
+          <ContactItem
+            isSelected={selectedID === id}
+            onSelectContact={onSelectContact}
+            key={id}
+            contactID={id}
+            contact={filteredContacts[id]}
+          />,
+        );
+      }
     }
 
     return (
@@ -71,14 +93,7 @@ class ListView extends Component<Props> {
         />
         <div style={listStyle}>
           <ul style={commonStyle} className="contact-list">
-            {filteredContacts.map((item, index) => (
-              <ContactItem
-                isSelected={selectedIndex === index}
-                onSelectContact={onSelectContact}
-                key={item.id}
-                contact={item}
-              />
-            ))}
+            {contactList}
           </ul>
         </div>
       </div>

@@ -1,15 +1,15 @@
 // @flow
 
 export type Contact = {
-  id: string,
   name: string,
   phoneNumber: string,
   githubUsername: string,
 };
 
 export type State = {
-  contacts: Array<Contact>,
+  contacts: {[id: string]: Contact},
   searchValue: string,
+  selectedID: ?string,
   selectedIndex: number,
-  selectedContact: Contact,
+  selectedContact: ?Contact,
 };

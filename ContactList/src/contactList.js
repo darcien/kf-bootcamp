@@ -20,18 +20,12 @@ const appStyle = {
 };
 
 class ContactList extends Component<Props, State> {
-  emptyContact: Contact = {
-    id: '-1',
-    name: '',
-    phoneNumber: '',
-    githubUsername: '',
-  };
-
   state = {
     contacts: initialContactList,
     selectedIndex: 0,
+    selectedID: null,
     searchValue: '',
-    selectedContact: this.emptyContact,
+    selectedContact: null,
   };
 
   componentDidMount() {
@@ -44,36 +38,26 @@ class ContactList extends Component<Props, State> {
 
   // Still having issues with wrong detail view when selecting contact with
   // keyboard.
-  // Posstible solution, save filtered contacts in state, performance degradation?
-  _onSelectContact = (contact: Contact) => {
-    let {contacts, searchValue} = this.state;
+  // Should I disable keyboard nav when filtering or store the filtered contacts
+  // instead?
+  _onSelectContact = (id: string) => {
+    let {contacts} = this.state;
 
-    let filteredContacts;
-    if (searchValue === '') {
-      filteredContacts = contacts;
+    let newSelectedContact;
+
+    if (contacts.hasOwnProperty(id)) {
+      newSelectedContact = contacts[id];
     } else {
-      let lowerSearchValue = searchValue.toLowerCase();
-      filteredContacts = contacts.filter((contact) => {
-        return contact.name.toLowerCase().includes(lowerSearchValue);
-      });
+      newSelectedContact = null;
     }
 
-    for (let i = 0; i < filteredContacts.length; i++) {
-      if (filteredContacts[i].id === contact.id) {
-        this.setState({selectedIndex: i, selectedContact: contact});
-      }
-    }
+    console.log('newSelectedContact', id);
+
+    this.setState({selectedID: id, selectedContact: newSelectedContact});
   };
 
   _onSearchChange = (event: Object) => {
-    let {contacts} = this.state;
-    let newSelectedContact = this.emptyContact;
-    for (let i = 0; i < contacts.length; i++) {
-      if (contacts[i].name.includes(event.target.value)) {
-        newSelectedContact = contacts[i];
-        break;
-      }
-    }
+    let newSelectedContact = null;
 
     this.setState({
       selectedIndex: 0,
@@ -82,14 +66,18 @@ class ContactList extends Component<Props, State> {
     });
   };
 
-  _onRemoveContact = (id: string) => {
+  _onRemoveContact = (id: ?string) => {
     let {contacts} = this.state;
 
-    let newContacts = contacts.filter((contact) => contact.id !== id);
+    let newContacts = contacts;
+
+    if (id && contacts.hasOwnProperty(id)) {
+      delete newContacts[id];
+    }
 
     this.setState({
       contacts: newContacts,
-      selectedContact: this.emptyContact,
+      selectedContact: null,
     });
   };
 
@@ -99,8 +87,10 @@ class ContactList extends Component<Props, State> {
     let {contacts, selectedIndex} = this.state;
     let newSelectedIndex = selectedIndex;
 
+    let contactsSize = Object.keys(contacts).length;
+
     if (keyName === 'ArrowDown') {
-      newSelectedIndex = Math.min(selectedIndex + 1, contacts.length - 1);
+      newSelectedIndex = Math.min(selectedIndex + 1, contactsSize - 1);
     }
     if (keyName === 'ArrowUp') {
       newSelectedIndex = Math.max(selectedIndex - 1, 0);
@@ -108,13 +98,13 @@ class ContactList extends Component<Props, State> {
     if (newSelectedIndex !== selectedIndex) {
       this.setState({
         selectedIndex: newSelectedIndex,
-        selectedContact: contacts[newSelectedIndex],
+        // selectedContact: contacts[newSelectedIndex],
       });
     }
   };
 
   render() {
-    let {contacts, selectedContact, selectedIndex, searchValue} = this.state;
+    let {contacts, selectedContact, selectedID, searchValue} = this.state;
 
     return (
       <div className="container" style={appStyle}>
@@ -122,10 +112,12 @@ class ContactList extends Component<Props, State> {
           contacts={contacts}
           onSearchChange={this._onSearchChange}
           onSelectContact={this._onSelectContact}
-          selectedIndex={selectedIndex}
+          selectedID={selectedID}
           searchValue={searchValue}
         />
         <DetailView
+          key={selectedID}
+          selectedID={selectedID}
           onRemoveContact={this._onRemoveContact}
           selectedContact={selectedContact}
         />

@@ -6,8 +6,9 @@ import type {Contact} from './types/State';
 
 type Props = {
   contact: Contact,
-  onSelectContact: (contact: Contact) => void,
+  onSelectContact: (id: string) => void,
   isSelected: boolean,
+  contactID: string,
 };
 
 const commonStyle = {
@@ -31,14 +32,16 @@ const unselectedStyle = {
 };
 
 export default function ContactItem(props: Props) {
-  let {contact, onSelectContact, isSelected} = props;
-  let {id, name, phoneNumber} = contact;
+  let {contact, contactID, onSelectContact, isSelected} = props;
+  let {name, phoneNumber} = contact;
+
+  console.log('id', contact);
 
   return (
     <li
-      key={id}
+      key={contactID}
       style={isSelected ? selectedStyle : unselectedStyle}
-      onClick={() => onSelectContact(contact)}
+      onClick={() => onSelectContact(contactID)}
     >
       <div className="list-name">{name}</div>
       <div className="list-phoneNumber">{phoneNumber}</div>

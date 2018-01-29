@@ -5,8 +5,9 @@ import React, {Component} from 'react';
 import type {Contact} from './types/State';
 
 type Props = {
-  selectedContact: Contact,
-  onRemoveContact: (id: string) => void,
+  selectedContact: ?Contact,
+  selectedID: ?string,
+  onRemoveContact: (id: ?string) => void,
 };
 
 type State = {
@@ -36,37 +37,36 @@ class DetailView extends Component<Props, State> {
     githubAvatarUrl: '',
   };
 
-  componentWillReceiveProps(nextProps: Props) {
-    let {githubUsername} = nextProps.selectedContact;
-    let fetchUrl = 'https://api.github.com/users/' + githubUsername;
+  componentDidMount() {
+    if (this.props.selectedContact) {
+      let {githubUsername} = this.props.selectedContact;
+      let fetchUrl = 'https://api.github.com/users/' + githubUsername;
+      if (githubUsername) {
+        fetch(fetchUrl)
+          .then((result) => {
+            return result.json();
+          })
+          .then((data) => {
+            let pictureUrl = data.avatar_url;
+            let name = data.name;
 
-    if (githubUsername !== '') {
-      fetch(fetchUrl)
-        .then((result) => {
-          return result.json();
-        })
-        .then((data) => {
-          let pictureUrl = data.avatar_url;
-          let name = data.name;
-
-          this.setState({githubName: name, githubAvatarUrl: pictureUrl});
+            this.setState({githubName: name, githubAvatarUrl: pictureUrl});
+          });
+      } else {
+        this.setState({
+          githubAvatarUrl: 'defaultIcon.png',
         });
-    } else {
-      this.setState({
-        githubAvatarUrl: 'defaultIcon.png',
-      });
+      }
     }
   }
 
   render() {
-    let {selectedContact, onRemoveContact} = this.props;
-    let {id, name, phoneNumber} = selectedContact;
+    let {selectedContact, selectedID, onRemoveContact} = this.props;
 
     let content;
 
-    if (id === '-1') {
-      content = <div className="detail view" style={detailViewStyle} />;
-    } else {
+    if (selectedContact && selectedID) {
+      let {name, phoneNumber} = selectedContact;
       content = (
         <div className="detail view" style={detailViewStyle}>
           <div className="detail header">
@@ -78,12 +78,14 @@ class DetailView extends Component<Props, State> {
           <div className="detail phoneNumber">📞 {phoneNumber}</div>
           <button
             className="detail removeContact"
-            onClick={() => onRemoveContact(id)}
+            onClick={() => onRemoveContact(selectedID)}
           >
             Remove
           </button>
         </div>
       );
+    } else {
+      content = <div className="detail view" style={detailViewStyle} />;
     }
 
     return content;
