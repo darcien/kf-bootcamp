@@ -3,8 +3,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 
-import PropTypes from 'prop-types';
-
 type State = {};
 
 class App extends Component<State> {
@@ -32,14 +30,6 @@ type GroupProps = {
 };
 
 class RadioGroup extends Component<GroupProps> {
-  getChildContext() {
-    return {name: this.props.name};
-  }
-
-  static childContextTypes = {
-    name: PropTypes.string,
-  };
-
   render() {
     let {name, children} = this.props;
 
@@ -57,16 +47,17 @@ type ItemProps = {
 };
 
 export class RadioItem extends Component<ItemProps> {
-  static contextTypes = {
-    name: PropTypes.string,
-  };
+  doSomething() {
+    let parent = this._reactInternalFiber._debugOwner.stateNode;
+    console.log(parent);
+  }
+
   render() {
     let {label} = this.props;
-    // let parentName = this._reactInternalFiber._debugOwner.child.child
-    // .memoizedProps.name;
+    this.doSomething();
     return (
       <p>
-        <input name={this.context.name} type="radio" value={label} id={label} />
+        <input type="radio" value={label} id={label} />
         <label htmlFor={label}>{label}</label>
       </p>
     );
@@ -78,4 +69,4 @@ if (document.body) {
   document.body.appendChild(div);
 }
 
-ReactDOM.render(<App />, div);
+ReactDOM.render(<App testing={true} />, div);
