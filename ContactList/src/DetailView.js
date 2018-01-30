@@ -2,7 +2,11 @@
 
 import React, {Component} from 'react';
 
+import MD5 from 'md5';
+
 import type {Contact} from './types/State';
+
+import key from './secret.js';
 
 type Props = {
   selectedContact: ?Contact,
@@ -12,7 +16,7 @@ type Props = {
 
 type State = {
   githubName: string,
-  githubAvatarUrl: string,
+  AvatarUrl: string,
 };
 
 const detailViewStyle = {
@@ -34,14 +38,32 @@ const imgStyle = {
 class DetailView extends Component<Props, State> {
   state = {
     githubName: '',
-    githubAvatarUrl: '',
+    AvatarUrl: '',
   };
 
   componentDidMount() {
     if (this.props.selectedContact) {
-      let {githubUsername} = this.props.selectedContact;
-      let fetchUrl = 'https://api.github.com/users/' + githubUsername;
-      if (githubUsername) {
+      let {githubUsername, email, googleUserID} = this.props.selectedContact;
+
+      if (googleUserID) {
+        let fetchUrl =
+          'https://www.googleapis.com/plus/v1/people/' +
+          googleUserID +
+          `?key=${key}`;
+
+        fetch(fetchUrl)
+          .then((result) => {
+            return result.json();
+          })
+          .then((data) => {
+            let pictureUrl = data.image.url;
+            pictureUrl = pictureUrl.substring(0, pictureUrl.length - 2) + '200';
+            let name = data.displayName;
+
+            this.setState({githubName: name, AvatarUrl: pictureUrl});
+          });
+      } else if (githubUsername) {
+        let fetchUrl = 'https://api.github.com/users/' + githubUsername;
         fetch(fetchUrl)
           .then((result) => {
             return result.json();
@@ -50,11 +72,24 @@ class DetailView extends Component<Props, State> {
             let pictureUrl = data.avatar_url;
             let name = data.name;
 
-            this.setState({githubName: name, githubAvatarUrl: pictureUrl});
+            this.setState({githubName: name, AvatarUrl: pictureUrl});
+          });
+      } else if (email) {
+        let hashedEmail = MD5(email);
+        let fetchUrl =
+          'https://www.gravatar.com/avatar/' + hashedEmail + '?s=200';
+
+        fetch(fetchUrl)
+          .then((response) => {
+            return response.blob();
+          })
+          .then((blob) => {
+            let imageUrl = URL.createObjectURL(blob);
+            this.setState({AvatarUrl: imageUrl});
           });
       } else {
         this.setState({
-          githubAvatarUrl: 'defaultIcon.png',
+          AvatarUrl: 'defaultIcon.png',
         });
       }
     }
@@ -71,7 +106,7 @@ class DetailView extends Component<Props, State> {
         <div className="detail view" style={detailViewStyle}>
           <div className="detail header">
             <div className="detail picture">
-              <img style={imgStyle} src={this.state.githubAvatarUrl} />
+              <img style={imgStyle} src={this.state.AvatarUrl} />
             </div>
             <div className="detail name">{name}</div>
           </div>

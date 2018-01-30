@@ -2,6 +2,7 @@
 import React, {Component} from 'react';
 import ListView from './ListView';
 import DetailView from './DetailView';
+import NewContactForm from './NewContactForm';
 
 import initialContactList from './initialContactList';
 
@@ -36,10 +37,22 @@ class ContactList extends Component<Props, State> {
     document.removeEventListener('keypress', this._handleKeypress);
   }
 
+  _onAddContact = (newContact: Contact) => {
+    let {contacts} = this.state;
+
+    let newID = Math.random().toString(10);
+    let newContacts = {...contacts, [newID]: newContact};
+
+    console.log('newContact', newContact);
+
+    this.setState({contacts: newContacts});
+  };
+
   // Still having issues with wrong detail view when selecting contact with
   // keyboard.
   // Should I disable keyboard nav when filtering or store the filtered contacts
   // instead?
+  // Removed keyboard handling instead...
   _onSelectContact = (id: string) => {
     let {contacts} = this.state;
 
@@ -50,8 +63,6 @@ class ContactList extends Component<Props, State> {
     } else {
       newSelectedContact = null;
     }
-
-    console.log('newSelectedContact', id);
 
     this.setState({selectedID: id, selectedContact: newSelectedContact});
   };
@@ -83,24 +94,6 @@ class ContactList extends Component<Props, State> {
 
   _handleKeypress = (event: Object) => {
     const keyName = event.key;
-
-    let {contacts, selectedIndex} = this.state;
-    let newSelectedIndex = selectedIndex;
-
-    let contactsSize = Object.keys(contacts).length;
-
-    if (keyName === 'ArrowDown') {
-      newSelectedIndex = Math.min(selectedIndex + 1, contactsSize - 1);
-    }
-    if (keyName === 'ArrowUp') {
-      newSelectedIndex = Math.max(selectedIndex - 1, 0);
-    }
-    if (newSelectedIndex !== selectedIndex) {
-      this.setState({
-        selectedIndex: newSelectedIndex,
-        // selectedContact: contacts[newSelectedIndex],
-      });
-    }
   };
 
   render() {
@@ -121,6 +114,7 @@ class ContactList extends Component<Props, State> {
           onRemoveContact={this._onRemoveContact}
           selectedContact={selectedContact}
         />
+        <NewContactForm onAddContact={this._onAddContact} />
       </div>
     );
   }

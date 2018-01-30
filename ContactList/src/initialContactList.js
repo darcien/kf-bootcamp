@@ -9,11 +9,18 @@ initialContactList = {
     name: 'Yosua',
     phoneNumber: '+62 878-0800-2924',
     githubUsername: 'darcien',
+    email: 'yosua.ian.sebastian@gmail.com',
+    googleUserID: '106789814834430652889',
   },
   [11]: {
     name: 'Rahel',
     phoneNumber: '+62 812-9425-5600',
     githubUsername: '',
+  },
+  [0]: {
+    name: 'Chyvalle',
+    phoneNumber: '+62 99',
+    email: 'lutfi.blast@gmail.com',
   },
   [12]: {
     name: 'Joshua',
@@ -30,7 +37,11 @@ initialContactList = {
     phoneNumber: '+61 433 998 850',
     githubUsername: '',
   },
-  [15]: {name: 'Evan', phoneNumber: '+62 811-1042-216', githubUsername: ''},
+  [15]: {
+    name: 'Evan',
+    phoneNumber: '+62 811-1042-216',
+    githubUsername: 'Sherlock9',
+  },
   [16]: {
     name: 'Jorgie',
     phoneNumber: '+62 812-8743-6934',

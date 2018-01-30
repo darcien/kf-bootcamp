@@ -35,8 +35,6 @@ export default function ContactItem(props: Props) {
   let {contact, contactID, onSelectContact, isSelected} = props;
   let {name, phoneNumber} = contact;
 
-  console.log('id', contact);
-
   return (
     <li
       key={contactID}

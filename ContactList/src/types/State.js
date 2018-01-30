@@ -3,7 +3,9 @@
 export type Contact = {
   name: string,
   phoneNumber: string,
-  githubUsername: string,
+  githubUsername: ?string,
+  email: ?string,
+  googleUserID: ?string,
 };
 
 export type State = {
