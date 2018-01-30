@@ -16,7 +16,9 @@ type Props = {
 
 type State = {
   githubName: string,
-  AvatarUrl: string,
+  avatarUrl: string,
+  githubRepos: Array<String>,
+  githubReposDetails: any,
 };
 
 const detailViewStyle = {
@@ -38,31 +40,34 @@ const imgStyle = {
 class DetailView extends Component<Props, State> {
   state = {
     githubName: '',
-    AvatarUrl: '',
+    avatarUrl: '',
+    githubRepos: [],
+    githubReposDetails: [],
   };
 
   componentDidMount() {
     if (this.props.selectedContact) {
       let {githubUsername, email, googleUserID} = this.props.selectedContact;
 
-      if (googleUserID) {
-        let fetchUrl =
-          'https://www.googleapis.com/plus/v1/people/' +
-          googleUserID +
-          `?key=${key}`;
-
-        fetch(fetchUrl)
-          .then((result) => {
-            return result.json();
-          })
-          .then((data) => {
-            let pictureUrl = data.image.url;
-            pictureUrl = pictureUrl.substring(0, pictureUrl.length - 2) + '200';
-            let name = data.displayName;
-
-            this.setState({githubName: name, AvatarUrl: pictureUrl});
-          });
-      } else if (githubUsername) {
+      // if (googleUserID) {
+      //   let fetchUrl =
+      //     'https://www.googleapis.com/plus/v1/people/' +
+      //     googleUserID +
+      //     `?key=${key}`;
+      //
+      //   fetch(fetchUrl)
+      //     .then((result) => {
+      //       return result.json();
+      //     })
+      //     .then((data) => {
+      //       let pictureUrl = data.image.url;
+      //       pictureUrl = pictureUrl.substring(0, pictureUrl.length - 2) + '200';
+      //       let name = data.displayName;
+      //
+      //       this.setState({githubName: name, avatarUrl: pictureUrl});
+      //     });
+      // } else
+      if (githubUsername) {
         let fetchUrl = 'https://api.github.com/users/' + githubUsername;
         fetch(fetchUrl)
           .then((result) => {
@@ -71,8 +76,28 @@ class DetailView extends Component<Props, State> {
           .then((data) => {
             let pictureUrl = data.avatar_url;
             let name = data.name;
+            let reposUrl = data.repos_url;
 
-            this.setState({githubName: name, AvatarUrl: pictureUrl});
+            this.setState({githubName: name, avatarUrl: pictureUrl});
+            return fetch(reposUrl);
+          })
+          .then((result) => {
+            return result.json();
+          })
+          .then((data) => {
+            let fetchRepoList = data.map((repo) => {
+              return fetch(repo.url);
+            });
+
+            this.setState({githubRepos: data});
+
+            return Promise.all(fetchRepoList);
+          })
+          .then((results) => {
+            return Promise.all(results.map((result) => result.json()));
+          })
+          .then((data) => {
+            this.setState({githubReposDetails: data});
           });
       } else if (email) {
         let hashedEmail = MD5(email);
@@ -85,11 +110,11 @@ class DetailView extends Component<Props, State> {
           })
           .then((blob) => {
             let imageUrl = URL.createObjectURL(blob);
-            this.setState({AvatarUrl: imageUrl});
+            this.setState({avatarUrl: imageUrl});
           });
       } else {
         this.setState({
-          AvatarUrl: 'defaultIcon.png',
+          avatarUrl: 'defaultIcon.png',
         });
       }
     }
@@ -97,20 +122,37 @@ class DetailView extends Component<Props, State> {
 
   render() {
     let {selectedContact, selectedID, onRemoveContact} = this.props;
+    let {avatarUrl, githubReposDetails} = this.state;
 
     let content;
+    let repos = [];
 
     if (selectedContact && selectedID) {
+      if (githubReposDetails.length > 0) {
+        repos = githubReposDetails.map((repo, index) => {
+          return (
+            <div key={repo.id}>
+              {index + 1}. {repo.name} : subscribers count ={' '}
+              {repo.subscribers_count}
+            </div>
+          );
+        });
+      }
+
       let {name, phoneNumber} = selectedContact;
       content = (
         <div className="detail view" style={detailViewStyle}>
           <div className="detail header">
             <div className="detail picture">
-              <img style={imgStyle} src={this.state.AvatarUrl} />
+              <img style={imgStyle} src={avatarUrl} />
             </div>
             <div className="detail name">{name}</div>
           </div>
-          <div className="detail phoneNumber">📞 {phoneNumber}</div>
+          <div className="detail phoneNumber">
+            📞 {phoneNumber} <br />
+            Github repos:<br />
+            {repos}
+          </div>
           <button
             className="detail removeContact"
             onClick={() => onRemoveContact(selectedID)}
