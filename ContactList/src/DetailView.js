@@ -6,7 +6,7 @@ import MD5 from 'md5';
 
 import type {Contact} from './types/State';
 
-import key from './secret.js';
+import {key, githubClientID, githubClientSecret} from './secret.js';
 
 type Props = {
   selectedContact: ?Contact,
@@ -28,6 +28,8 @@ const detailViewStyle = {
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-evenly',
+  minWidth: '450px',
+  width: '450px',
 };
 
 const imgStyle = {
@@ -68,7 +70,10 @@ class DetailView extends Component<Props, State> {
       //     });
       // } else
       if (githubUsername) {
-        let fetchUrl = 'https://api.github.com/users/' + githubUsername;
+        let fetchUrl =
+          'https://api.github.com/users/' +
+          githubUsername +
+          `?client_id=${githubClientID}&client_secret=${githubClientSecret}`;
         fetch(fetchUrl)
           .then((result) => {
             return result.json();
@@ -79,14 +84,20 @@ class DetailView extends Component<Props, State> {
             let reposUrl = data.repos_url;
 
             this.setState({githubName: name, avatarUrl: pictureUrl});
-            return fetch(reposUrl);
+            return fetch(
+              reposUrl +
+                `?client_id=${githubClientID}&client_secret=${githubClientSecret}`,
+            );
           })
           .then((result) => {
             return result.json();
           })
           .then((data) => {
             let fetchRepoList = data.map((repo) => {
-              return fetch(repo.url);
+              return fetch(
+                repo.url +
+                  `?client_id=${githubClientID}&client_secret=${githubClientSecret}`,
+              );
             });
 
             this.setState({githubRepos: data});

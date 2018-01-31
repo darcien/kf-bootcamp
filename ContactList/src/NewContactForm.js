@@ -12,6 +12,15 @@ type State = {
   newContact: Contact,
 };
 
+const formStyle = {
+  flex: '1 0 auto',
+  backgroundColor: '#75b9c7',
+  padding: '20px',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-evenly',
+};
+
 export default class NewContactForm extends Component<Props, State> {
   state = {
     newContact: {
@@ -39,7 +48,7 @@ export default class NewContactForm extends Component<Props, State> {
     let {onAddContact} = this.props;
 
     return (
-      <div>
+      <div style={formStyle}>
         <table>
           <tbody>
             <tr>
