@@ -147,7 +147,7 @@ class DetailView extends Component<Props, State> {
     let {avatarUrl, githubReposDetails, selectedRepoID} = this.state;
 
     let content;
-    let repos = [];
+    let repos = null;
 
     let repoDetails;
 
@@ -185,7 +185,7 @@ class DetailView extends Component<Props, State> {
         });
       }
 
-      let {name, phoneNumber} = selectedContact;
+      let {githubUsername, name, phoneNumber} = selectedContact;
       content = (
         <div className="detail view" style={detailViewStyle}>
           <div className="detail header">
@@ -196,8 +196,15 @@ class DetailView extends Component<Props, State> {
           </div>
           <div className="detail phoneNumber">
             📞 {phoneNumber} <br />
-            Github repos:<br />
+            {githubUsername ? 'Github repos:' : ''}
+            <br />
+            {/* <CSSTransitionGroup
+              transitionName="githubDetails"
+              transitionEnterTimeout={500}
+              transitionLeaveTimeout={300}
+            > */}
             {repos}
+            {/* </CSSTransitionGroup> */}
           </div>
           <button
             className="detail removeContact"
