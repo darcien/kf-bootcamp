@@ -43,8 +43,6 @@ class ContactList extends Component<Props, State> {
     let newID = Math.random().toString(10);
     let newContacts = {...contacts, [newID]: newContact};
 
-    console.log('newContact', newContact);
-
     this.setState({contacts: newContacts});
   };
 

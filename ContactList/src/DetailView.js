@@ -1,6 +1,7 @@
 // @flow
 
 import React, {Component} from 'react';
+import {CSSTransitionGroup} from 'react-transition-group';
 
 import MD5 from 'md5';
 
@@ -19,6 +20,7 @@ type State = {
   avatarUrl: string,
   githubRepos: Array<String>,
   githubReposDetails: any,
+  selectedRepoID: string,
 };
 
 const detailViewStyle = {
@@ -39,12 +41,17 @@ const imgStyle = {
   backgroundColor: 'lightgreen',
 };
 
+const repoDetailsStyle = {
+  margin: '6px',
+};
+
 class DetailView extends Component<Props, State> {
   state = {
     githubName: '',
     avatarUrl: '',
     githubRepos: [],
     githubReposDetails: [],
+    selectedRepoID: '',
   };
 
   componentDidMount() {
@@ -71,9 +78,8 @@ class DetailView extends Component<Props, State> {
       // } else
       if (githubUsername) {
         let githubOAuth = `?client_id=${githubClientID}&client_secret=${githubClientSecret}`;
-        let fetchUrl =
-          'https://api.github.com/users/' + githubUsername + githubOAuth;
-        fetch(fetchUrl)
+        let fetchUrl = 'https://api.github.com/users/' + githubUsername;
+        fetch(fetchUrl + githubOAuth)
           .then((result) => {
             return result.json();
           })
@@ -86,6 +92,9 @@ class DetailView extends Component<Props, State> {
             return fetch(reposUrl + githubOAuth);
           })
           .then((result) => {
+            if (!result.ok) {
+              return Promise.reject(result);
+            }
             return result.json();
           })
           .then((data) => {
@@ -102,6 +111,9 @@ class DetailView extends Component<Props, State> {
           })
           .then((data) => {
             this.setState({githubReposDetails: data});
+          })
+          .catch((result) => {
+            console.log('ERROR', result);
           });
       } else if (email) {
         let hashedEmail = MD5(email);
@@ -124,20 +136,50 @@ class DetailView extends Component<Props, State> {
     }
   }
 
+  _onRepoSelect = (repoID: number) => {
+    if (repoID) {
+      this.setState({selectedRepoID: String(repoID)});
+    }
+  };
+
   render() {
     let {selectedContact, selectedID, onRemoveContact} = this.props;
-    let {avatarUrl, githubReposDetails} = this.state;
+    let {avatarUrl, githubReposDetails, selectedRepoID} = this.state;
 
     let content;
     let repos = [];
 
+    let repoDetails;
+
     if (selectedContact && selectedID) {
       if (githubReposDetails.length > 0) {
         repos = githubReposDetails.map((repo, index) => {
+          let {id, name} = repo;
+
+          if (String(id) === selectedRepoID) {
+            let {created_at, size, subscribers_count, watchers} = repo;
+            repoDetails = (
+              <div key={id}>
+                <ul style={repoDetailsStyle}>
+                  <li>Created at : {created_at}</li>
+                  <li>Size : {size} KBs</li>
+                  <li>Subscribers : {subscribers_count}</li>
+                  <li>Stalkers : {watchers}</li>
+                </ul>
+              </div>
+            );
+          } else {
+            repoDetails = null;
+          }
+
           return (
-            <div key={repo.id}>
-              {index + 1}. {repo.name} : subscribers count ={' '}
-              {repo.subscribers_count}
+            <div
+              className="detail repo"
+              key={id}
+              onClick={() => this._onRepoSelect(id)}
+            >
+              {index + 1}. {name}
+              {repoDetails}
             </div>
           );
         });

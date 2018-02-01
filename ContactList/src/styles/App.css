@@ -2,6 +2,10 @@ div {
   font: 1em 'Fira Sans', sans-serif;
 }
 
+:global .detail .repo {
+  line-height: 1.1;
+}
+
 .container {
   display: 'flex';
   background-color: 'lightpink';
@@ -51,4 +55,22 @@ div {
   background: #ca3c3c;
   border: none;
   font-size: 1em;
+}
+
+:global .githubDetails-enter {
+  opacity: 0.01;
+}
+
+:global .githubDetails-enter.githubDetails-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+:global .githubDetails-leave {
+  opacity: 1;
+}
+
+:global .githubDetails-leave.githubDetails-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
 }
