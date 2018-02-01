@@ -70,10 +70,9 @@ class DetailView extends Component<Props, State> {
       //     });
       // } else
       if (githubUsername) {
+        let githubOAuth = `?client_id=${githubClientID}&client_secret=${githubClientSecret}`;
         let fetchUrl =
-          'https://api.github.com/users/' +
-          githubUsername +
-          `?client_id=${githubClientID}&client_secret=${githubClientSecret}`;
+          'https://api.github.com/users/' + githubUsername + githubOAuth;
         fetch(fetchUrl)
           .then((result) => {
             return result.json();
@@ -84,20 +83,14 @@ class DetailView extends Component<Props, State> {
             let reposUrl = data.repos_url;
 
             this.setState({githubName: name, avatarUrl: pictureUrl});
-            return fetch(
-              reposUrl +
-                `?client_id=${githubClientID}&client_secret=${githubClientSecret}`,
-            );
+            return fetch(reposUrl + githubOAuth);
           })
           .then((result) => {
             return result.json();
           })
           .then((data) => {
             let fetchRepoList = data.map((repo) => {
-              return fetch(
-                repo.url +
-                  `?client_id=${githubClientID}&client_secret=${githubClientSecret}`,
-              );
+              return fetch(repo.url + githubOAuth);
             });
 
             this.setState({githubRepos: data});
