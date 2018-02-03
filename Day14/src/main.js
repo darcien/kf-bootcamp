@@ -1,7 +1,5 @@
 // @flow
 
-// TODO use recursive instead of while loop
-
 type Action =
   | {
       type: 'WAIT',
@@ -22,13 +20,8 @@ function* getUserRepos(userID: string): ReposGen {
     url: `https://api.github.com/users/${userID}/repos`,
   };
 
-  console.log('Repos:', repos);
-
   yield {type: 'WAIT', ms: 300};
-  // let finalResult = repos.map((repo) => repo.name);
-  let finalResult = ['Hi'];
-  console.log('Final', finalResult);
-  return Promise.resolve(finalResult);
+  return repos.map((repo) => repo.name);
 }
 
 function mockFetch(url): Promise<*> {
@@ -38,38 +31,36 @@ function mockFetch(url): Promise<*> {
 }
 
 function run(gen: ReposGen) {
-  gen.next();
-  let next = gen.next();
-
   return new Promise((resolve, reject) => {
-    if (next.value) {
-      while (!next.value.done) {
-        switch (next.value.type) {
+    function processNext(data) {
+      let {done, value} = gen.next(data);
+      if (value) {
+        switch (value.type) {
           case 'WAIT':
-            console.log('Waiting...', next.value.ms);
-            next = gen.next();
+            console.log('Waiting...', value.ms);
+            setTimeout(() => {
+              processNext();
+            }, value.ms);
             break;
           case 'FETCH':
-            console.log('Fetching...', next.value.url);
+            console.log('Fetching...', value.url);
 
-            mockFetch(next.value.url).then((data) => {
-              resolve(data);
+            mockFetch(value.url).then((data) => {
+              processNext(data);
             });
-            next = gen.next();
 
             break;
         }
-        if (next.done) {
-          resolve(next.value);
+        if (done) {
+          resolve(value);
         }
       }
     }
+    processNext();
   });
 }
 
 let promise = run(getUserRepos('sstur'));
-
-console.log('Promise : ', promise);
 
 if (promise) {
   promise.then((result) => {
