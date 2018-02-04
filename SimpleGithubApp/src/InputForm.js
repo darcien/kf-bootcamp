@@ -29,9 +29,8 @@ const lightGreen = {
 
 export default class InputForm extends Component<Props, State> {
   componentDidMount() {
-    let {isChecking} = this.props;
-
     // Check the username here, or not...
+    // Checking in App instead.
   }
 
   render() {
@@ -41,7 +40,7 @@ export default class InputForm extends Component<Props, State> {
 
     if (username) {
       if (isChecking) {
-        usernameTips = 'Now loading...';
+        usernameTips = 'Now checking...';
       } else {
         switch (isUsernameValid) {
           case true:

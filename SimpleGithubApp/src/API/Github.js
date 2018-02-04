@@ -2,7 +2,7 @@
 
 import fetch from 'node-fetch';
 
-import {githubOAuth} from './secret';
+import {githubOAuth} from './secrets';
 
 const githubUsersUrl = 'https://api.github.com/users/';
 

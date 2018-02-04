@@ -9,9 +9,10 @@ import Github from './API/Github';
 
 type State = {
   isUsernameValid: boolean,
-  username: string,
+  userInput: string,
   delayID: ?TimeoutID,
   isChecking: boolean,
+  username: string,
 };
 
 type Props = {};
@@ -19,13 +20,14 @@ type Props = {};
 export default class App extends Component<Props, State> {
   state = {
     isUsernameValid: false,
-    username: '',
+    userInput: '',
     delayID: null,
     isChecking: false,
+    username: '',
   };
 
-  _onInputChange = (username: string) => {
-    let trimmedUsername = username.trim();
+  _onInputChange = (userInput: string) => {
+    let trimmedUsername = userInput.trim();
 
     let {delayID} = this.state;
 
@@ -35,7 +37,7 @@ export default class App extends Component<Props, State> {
 
     if (trimmedUsername) {
       this.setState({
-        username: trimmedUsername,
+        userInput: trimmedUsername,
         delayID: setTimeout(() => {
           Github.checkUser(trimmedUsername).then((isValid) => {
             this.setState({
@@ -49,21 +51,27 @@ export default class App extends Component<Props, State> {
     }
   };
 
-  _onUserSubmit = () => {};
+  _onUserSubmit = () => {
+    let {userInput} = this.state;
+
+    console.log('userInput', userInput);
+
+    this.setState({username: userInput});
+  };
 
   render() {
-    let {username, isUsernameValid, isChecking} = this.state;
+    let {username, userInput, isUsernameValid, isChecking} = this.state;
 
     return (
       <div>
         <InputForm
-          username={username}
+          username={userInput}
           isUsernameValid={isUsernameValid}
           isChecking={isChecking}
           onChange={this._onInputChange}
           onClick={this._onUserSubmit}
         />
-        {/* <MainDisplay /> */}
+        <MainDisplay key={username.length} username={username} />
       </div>
     );
   }
