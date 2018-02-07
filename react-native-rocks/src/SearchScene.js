@@ -17,6 +17,7 @@ import {clientId} from './secrets.js';
 
 type Props = {
   navigator: Object,
+  favs: Object,
 };
 
 type State = {
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
   },
   favs: {
     flex: 1,
-    backgroundColor: '#55f',
+    backgroundColor: '#ff3',
     borderWidth: 2,
     padding: 2,
     alignItems: 'center',
