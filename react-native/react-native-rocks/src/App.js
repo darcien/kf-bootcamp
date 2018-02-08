@@ -3,15 +3,22 @@ import React, {Component} from 'react';
 import {
   FlatList,
   Image,
-  StyleSheet,
   ScrollView,
+  StatusBar,
+  StyleSheet,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
-  StatusBar,
 } from 'react-native';
 
 type Props = {};
+
+type State = {
+  activeTab: Tab,
+};
+
+type Tab = 'ALL' | 'MAIN' | 'DESSERT';
 
 const menuType = {
   MAIN: 'Main Course',
@@ -28,7 +35,7 @@ const imageList = {
 const menuList = [
   {
     key: 1,
-    name: 'Secret Recipe blabla',
+    name: 'Secret Recipe: Salad with fresh salad',
     type: 'MAIN',
     price: 150,
     image: 'SALAD',
@@ -63,8 +70,95 @@ const menuList = [
   },
 ];
 
-export default class App extends Component<Props> {
+export default class App extends Component<Props, State> {
+  state = {
+    activeTab: 'ALL',
+  };
+
+  _goTo = (newTab: Tab) => {
+    console.log('Changed tab to', newTab);
+    this.setState({activeTab: newTab});
+  };
+
   render() {
+    let {activeTab} = this.state;
+
+    let tab;
+
+    //TODO Put the content of the tab to it's own component instead of copy
+    // pasting like this...
+
+    switch (activeTab) {
+      case 'ALL':
+        tab = (
+          <View>
+            <FlatList
+              data={menuList}
+              renderItem={({item}) => (
+                <View style={styles.menu}>
+                  <View style={styles.imageContainer}>
+                    <Image
+                      style={styles.image}
+                      source={imageList[item.image]}
+                    />
+                  </View>
+                  <View style={styles.menuDescContainer}>
+                    <View style={styles.menuNameContainer}>
+                      <Text style={styles.menuName}>{item.name}</Text>
+                    </View>
+                    <View style={styles.menuTypeContainer}>
+                      <Text style={styles.menuType}>{menuType[item.type]}</Text>
+                    </View>
+                    <View style={styles.menuPriceContainer}>
+                      <Text style={styles.menuPrice}>${item.price}.00</Text>
+                    </View>
+                  </View>
+                </View>
+              )}
+            />
+          </View>
+        );
+        break;
+      case 'MAIN':
+        let filteredMenuList = [];
+
+        menuList.forEach((menu) => {
+          if (menu.type === 'MAIN') {
+            filteredMenuList.push(menu);
+          }
+        });
+
+        tab = (
+          <View>
+            <FlatList
+              data={filteredMenuList}
+              renderItem={({item}) => (
+                <View style={styles.menu}>
+                  <View style={styles.imageContainer}>
+                    <Image
+                      style={styles.image}
+                      source={imageList[item.image]}
+                    />
+                  </View>
+                  <View style={styles.menuDescContainer}>
+                    <View style={styles.menuNameContainer}>
+                      <Text style={styles.menuName}>{item.name}</Text>
+                    </View>
+                    <View style={styles.menuTypeContainer}>
+                      <Text style={styles.menuType}>{menuType[item.type]}</Text>
+                    </View>
+                    <View style={styles.menuPriceContainer}>
+                      <Text style={styles.menuPrice}>${item.price}.00</Text>
+                    </View>
+                  </View>
+                </View>
+              )}
+            />
+          </View>
+        );
+        break;
+    }
+
     return (
       <View style={styles.container}>
         <StatusBar barStyle={'light-content'} />
@@ -82,44 +176,43 @@ export default class App extends Component<Props> {
         </View>
         <View style={styles.separator} />
         <View style={styles.tabContainer}>
-          <View style={styles.selectedTabTextContainer}>
-            <Text style={styles.selectedTabText}>Not All Menus</Text>
-          </View>
-          <View style={styles.tabTextContainer}>
-            <Text style={styles.tabText}>Not Main Course</Text>
-          </View>
+          <TouchableWithoutFeedback onPress={() => this._goTo('ALL')}>
+            <View
+              style={
+                activeTab === 'ALL'
+                  ? styles.selectedTabTextContainer
+                  : styles.tabTextContainer
+              }
+            >
+              <Text
+                style={
+                  activeTab === 'ALL' ? styles.selectedTabText : styles.tabText
+                }
+              >
+                Not All Menus
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={() => this._goTo('MAIN')}>
+            <View
+              style={
+                activeTab === 'MAIN'
+                  ? styles.selectedTabTextContainer
+                  : styles.tabTextContainer
+              }
+            >
+              <Text
+                style={
+                  activeTab === 'MAIN' ? styles.selectedTabText : styles.tabText
+                }
+              >
+                Not Main Course
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
         <View style={styles.menusContainer}>
-          <ScrollView>
-            <View>
-              <FlatList
-                data={menuList}
-                renderItem={({item}) => (
-                  <View style={styles.menu}>
-                    <View style={styles.imageContainer}>
-                      <Image
-                        style={styles.image}
-                        source={imageList[item.image]}
-                      />
-                    </View>
-                    <View style={styles.menuDescContainer}>
-                      <View style={styles.menuNameContainer}>
-                        <Text style={styles.menuName}>{item.name}</Text>
-                      </View>
-                      <View style={styles.menuTypeContainer}>
-                        <Text style={styles.menuType}>
-                          {menuType[item.type]}
-                        </Text>
-                      </View>
-                      <View style={styles.menuPriceContainer}>
-                        <Text style={styles.menuPrice}>${item.price}.00</Text>
-                      </View>
-                    </View>
-                  </View>
-                )}
-              />
-            </View>
-          </ScrollView>
+          <ScrollView>{tab}</ScrollView>
         </View>
         <View style={styles.navContainer}>
           <View style={styles.nav}>
