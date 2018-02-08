@@ -122,16 +122,16 @@ export default class App extends Component<Props, State> {
               style={styles.searchIcon}
               source={require('../assets/search-icon.jpeg')}
             />
+            <TextInput
+              style={styles.search}
+              underlineColorAndroid="transparent"
+              placeholder="Find Menu Here"
+              value={query}
+              onChangeText={(query) => {
+                this._onChangeText(query);
+              }}
+            />
           </View>
-          <TextInput
-            style={styles.search}
-            underlineColorAndroid="transparent"
-            placeholder="Find Menu Here"
-            value={query}
-            onChangeText={(query) => {
-              this._onChangeText(query);
-            }}
-          />
         </View>
         <View style={styles.separator} />
         <View style={styles.tabContainer}>
@@ -171,36 +171,27 @@ export default class App extends Component<Props, State> {
           </TouchableWithoutFeedback>
         </View>
         <View style={styles.menusContainer}>
-          <ScrollView>
-            <View>
-              <FlatList
-                data={this.filteredMenuList}
-                renderItem={({item}) => (
-                  <View style={styles.menu}>
-                    <View style={styles.imageContainer}>
-                      <Image
-                        style={styles.image}
-                        source={imageList[item.image]}
-                      />
-                    </View>
-                    <View style={styles.menuDescContainer}>
-                      <View style={styles.menuNameContainer}>
-                        <Text style={styles.menuName}>{item.name}</Text>
-                      </View>
-                      <View style={styles.menuTypeContainer}>
-                        <Text style={styles.menuType}>
-                          {menuType[item.type]}
-                        </Text>
-                      </View>
-                      <View style={styles.menuPriceContainer}>
-                        <Text style={styles.menuPrice}>${item.price}.00</Text>
-                      </View>
-                    </View>
+          <FlatList
+            data={this.filteredMenuList}
+            renderItem={({item}) => (
+              <View style={[styles.menu]}>
+                <View style={styles.imageContainer}>
+                  <Image style={styles.image} source={imageList[item.image]} />
+                </View>
+                <View style={styles.menuDescContainer}>
+                  <View style={styles.menuNameContainer}>
+                    <Text style={styles.menuName}>{item.name}</Text>
                   </View>
-                )}
-              />
-            </View>
-          </ScrollView>
+                  <View style={styles.menuTypeContainer}>
+                    <Text style={styles.menuType}>{menuType[item.type]}</Text>
+                  </View>
+                  <View style={styles.menuPriceContainer}>
+                    <Text style={styles.menuPrice}>${item.price}.00</Text>
+                  </View>
+                </View>
+              </View>
+            )}
+          />
         </View>
         <View style={styles.navContainer}>
           <View style={styles.nav}>
@@ -264,24 +255,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   searchIconContainer: {
-    position: 'absolute',
-    left: 24,
-    top: 6,
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderRadius: 3,
+    borderColor: '#eee',
     // backgroundColor: '#000',
   },
   searchIcon: {
     resizeMode: 'contain',
     width: 30,
+    marginHorizontal: 10,
   },
   search: {
     color: '#000',
     flex: 1,
-    paddingLeft: 45,
-    paddingRight: 10,
     minHeight: 42,
-    borderWidth: 1,
-    borderRadius: 3,
-    borderColor: '#eee',
+    // borderWidth: 1,
+    // borderRadius: 3,
+    // borderColor: '#eee',
   },
   separator: {
     flex: 0.4,
@@ -324,14 +315,14 @@ const styles = StyleSheet.create({
     flex: 20,
     // borderWidth: 2,
     backgroundColor: '#fff',
+    paddingHorizontal: 20,
   },
   menu: {
     flexDirection: 'row',
-    paddingHorizontal: 10,
     paddingVertical: 15,
     borderColor: '#ccc',
     borderBottomWidth: 1,
-    borderRadius: 30,
+    borderBottomColor: 'red',
   },
   imageContainer: {
     flex: 1,
