@@ -16,6 +16,7 @@ type Props = {};
 
 type State = {
   activeTab: Tab,
+  query: string,
 };
 
 type Tab = 'ALL' | 'MAIN' | 'DESSERT';
@@ -73,89 +74,39 @@ const menuList = [
 export default class App extends Component<Props, State> {
   state = {
     activeTab: 'ALL',
+    query: '',
   };
+  filteredMenuList: Array<Object> = [];
 
   _goTo = (newTab: Tab) => {
-    console.log('Changed tab to', newTab);
+    // console.log('Changed tab to', newTab);
     this.setState({activeTab: newTab});
   };
 
   render() {
-    let {activeTab} = this.state;
-
-    let tab;
+    let {activeTab, query} = this.state;
 
     //TODO Put the content of the tab to it's own component instead of copy
     // pasting like this...
 
+    // NVM, I filtered in the switch instead.
+
     switch (activeTab) {
       case 'ALL':
-        tab = (
-          <View>
-            <FlatList
-              data={menuList}
-              renderItem={({item}) => (
-                <View style={styles.menu}>
-                  <View style={styles.imageContainer}>
-                    <Image
-                      style={styles.image}
-                      source={imageList[item.image]}
-                    />
-                  </View>
-                  <View style={styles.menuDescContainer}>
-                    <View style={styles.menuNameContainer}>
-                      <Text style={styles.menuName}>{item.name}</Text>
-                    </View>
-                    <View style={styles.menuTypeContainer}>
-                      <Text style={styles.menuType}>{menuType[item.type]}</Text>
-                    </View>
-                    <View style={styles.menuPriceContainer}>
-                      <Text style={styles.menuPrice}>${item.price}.00</Text>
-                    </View>
-                  </View>
-                </View>
-              )}
-            />
-          </View>
-        );
+        this.filteredMenuList = menuList.filter((menu) => {
+          return menu.name.toLowerCase().includes(query.toLowerCase());
+        });
         break;
       case 'MAIN':
-        let filteredMenuList = [];
-
+        this.filteredMenuList = [];
         menuList.forEach((menu) => {
-          if (menu.type === 'MAIN') {
-            filteredMenuList.push(menu);
+          if (
+            menu.type === 'MAIN' &&
+            menu.name.toLowerCase().includes(query.toLowerCase())
+          ) {
+            this.filteredMenuList.push(menu);
           }
         });
-
-        tab = (
-          <View>
-            <FlatList
-              data={filteredMenuList}
-              renderItem={({item}) => (
-                <View style={styles.menu}>
-                  <View style={styles.imageContainer}>
-                    <Image
-                      style={styles.image}
-                      source={imageList[item.image]}
-                    />
-                  </View>
-                  <View style={styles.menuDescContainer}>
-                    <View style={styles.menuNameContainer}>
-                      <Text style={styles.menuName}>{item.name}</Text>
-                    </View>
-                    <View style={styles.menuTypeContainer}>
-                      <Text style={styles.menuType}>{menuType[item.type]}</Text>
-                    </View>
-                    <View style={styles.menuPriceContainer}>
-                      <Text style={styles.menuPrice}>${item.price}.00</Text>
-                    </View>
-                  </View>
-                </View>
-              )}
-            />
-          </View>
-        );
         break;
     }
 
@@ -172,7 +123,15 @@ export default class App extends Component<Props, State> {
               source={require('../assets/search-icon.jpeg')}
             />
           </View>
-          <TextInput style={styles.search} placeholder="Find Menu Here" />
+          <TextInput
+            style={styles.search}
+            underlineColorAndroid="transparent"
+            placeholder="Find Menu Here"
+            value={query}
+            onChangeText={(query) => {
+              this._onChangeText(query);
+            }}
+          />
         </View>
         <View style={styles.separator} />
         <View style={styles.tabContainer}>
@@ -206,13 +165,42 @@ export default class App extends Component<Props, State> {
                   activeTab === 'MAIN' ? styles.selectedTabText : styles.tabText
                 }
               >
-                Not Main Course
+                Main Course
               </Text>
             </View>
           </TouchableWithoutFeedback>
         </View>
         <View style={styles.menusContainer}>
-          <ScrollView>{tab}</ScrollView>
+          <ScrollView>
+            <View>
+              <FlatList
+                data={this.filteredMenuList}
+                renderItem={({item}) => (
+                  <View style={styles.menu}>
+                    <View style={styles.imageContainer}>
+                      <Image
+                        style={styles.image}
+                        source={imageList[item.image]}
+                      />
+                    </View>
+                    <View style={styles.menuDescContainer}>
+                      <View style={styles.menuNameContainer}>
+                        <Text style={styles.menuName}>{item.name}</Text>
+                      </View>
+                      <View style={styles.menuTypeContainer}>
+                        <Text style={styles.menuType}>
+                          {menuType[item.type]}
+                        </Text>
+                      </View>
+                      <View style={styles.menuPriceContainer}>
+                        <Text style={styles.menuPrice}>${item.price}.00</Text>
+                      </View>
+                    </View>
+                  </View>
+                )}
+              />
+            </View>
+          </ScrollView>
         </View>
         <View style={styles.navContainer}>
           <View style={styles.nav}>
@@ -237,6 +225,10 @@ export default class App extends Component<Props, State> {
       </View>
     );
   }
+
+  _onChangeText = (query: string) => {
+    this.setState({query});
+  };
 }
 
 const styles = StyleSheet.create({
