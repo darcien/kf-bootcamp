@@ -26,6 +26,7 @@ type State = {
 
 const INTERVAL = 33;
 const LAP_HEIGHT = 38;
+const LAP_MARGIN = 0;
 
 async function loadFont() {
   return await Font.loadAsync({
@@ -63,6 +64,7 @@ export default class App extends Component<Props, State> {
       this.refs.flatList.scrollToIndex({
         index: 0,
         viewOffset: 0,
+        viewPosition: 0,
       });
     }
     this._lapList = [];
@@ -75,13 +77,23 @@ export default class App extends Component<Props, State> {
   };
 
   _addLap = (elapsedTime: number) => {
-    // let {lapList} = this.state;
+    let lapNum = this._lapList.length;
     let newLap = {
-      key: this._lapList.length + 1,
+      key: lapNum + 1,
       elapsedTime,
     };
     this._lapList = [...this._lapList, newLap];
-    setTimeout(() => this.refs.flatList.scrollToEnd(), 0);
+    if (lapNum) {
+      setTimeout(
+        () =>
+          this.refs.flatList.scrollToIndex({
+            index: lapNum - 1,
+            viewOffset: 0,
+            viewPosition: 1,
+          }),
+        33,
+      );
+    }
   };
 
   _renderItem = ({item}) => (
@@ -101,7 +113,7 @@ export default class App extends Component<Props, State> {
 
   _renderLapListFooter = () => {
     let lapNum = this._lapList.length;
-    let placeholderLapNum = 5 - lapNum;
+    let placeholderLapNum = 4 - lapNum;
     let listFooterComponent = [];
     for (let i = 0; i < placeholderLapNum; i++) {
       listFooterComponent.push(
@@ -134,7 +146,7 @@ export default class App extends Component<Props, State> {
 
     return (
       <View style={styles.container}>
-        <StatusBar barStyle="dark-content" />
+        <StatusBar barStyle="light-content" />
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Stopwatch</Text>
         </View>
@@ -220,7 +232,7 @@ export default class App extends Component<Props, State> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#fff',
+    backgroundColor: '#000',
     alignItems: 'stretch',
     flexDirection: 'column',
     justifyContent: 'center',
