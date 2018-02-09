@@ -24,7 +24,7 @@ type State = {
   fontLoaded: boolean,
 };
 
-const INTERVAL = 33;
+const INTERVAL = 17;
 const LAP_HEIGHT = 38;
 const LAP_MARGIN = 0;
 
