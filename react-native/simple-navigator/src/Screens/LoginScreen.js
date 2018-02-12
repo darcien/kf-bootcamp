@@ -4,7 +4,7 @@ import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 
 type Props = {};
 
-export default class LoginScene extends Component<Props> {
+export default class LoginScreen extends Component<Props> {
   render() {
     //
     let {navigation: {state: {params}}} = this.props;
@@ -12,12 +12,11 @@ export default class LoginScene extends Component<Props> {
       <View style={styles.container}>
         <TouchableOpacity
           onPress={() => {
-            console.log('Login');
             this.props.navigation.navigate('Home');
           }}
         >
-          <View style={{width: 200, height: 200, backgroundColor: 'red'}}>
-            <Text style={styles.introText}>Login!</Text>
+          <View style={styles.loginButton}>
+            <Text style={styles.loginText}>Login!</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -32,7 +31,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  introText: {
-    color: 'blue',
+  loginButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 200,
+    height: 60,
+    backgroundColor: 'rgb(81, 176, 95)',
+  },
+  loginText: {
+    color: 'rgb(55, 28, 78)',
   },
 });

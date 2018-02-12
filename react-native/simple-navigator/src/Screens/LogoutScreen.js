@@ -6,7 +6,7 @@ type Props = {
   navigation: Object,
 };
 
-export default class LogoutScene extends Component<Props> {
+export default class LogoutScreen extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
