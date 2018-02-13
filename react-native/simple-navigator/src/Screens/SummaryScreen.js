@@ -4,7 +4,7 @@ import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 
 type Props = {};
 
-export default class LoginScreen extends Component<Props> {
+export default class SummaryScreen extends Component<Props> {
   render() {
     //
     let {navigation: {state: {params}}} = this.props;
@@ -12,11 +12,11 @@ export default class LoginScreen extends Component<Props> {
       <View style={styles.container}>
         <TouchableOpacity
           onPress={() => {
-            this.props.navigation.navigate('Home', {isLoggedIn: true});
+            this.props.navigation.navigate('Detail');
           }}
         >
           <View style={styles.loginButton}>
-            <Text style={styles.loginText}>Login!</Text>
+            <Text style={styles.loginText}>Go to detail!</Text>
           </View>
         </TouchableOpacity>
       </View>
