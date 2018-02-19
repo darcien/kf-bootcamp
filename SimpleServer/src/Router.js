@@ -14,7 +14,7 @@ export function parsePattern(pattern: string) {
     parsedPattern = {
       ...parsedPattern,
       placeholder: splittedPattern.pop(),
-      base: splittedPattern.pop(),
+      base: splittedPattern.pop().slice(0, -1),
     };
     return parsedPattern;
   } else {
@@ -47,21 +47,22 @@ export default class Router {
     this.availableRoutes[base] = {...parsedPattern, handler};
   }
 
-  handleRequest(path: string, context: Object) {
+  handleRequest(
+    path: string,
+    context: Object,
+    errorHandler: Function = () => {},
+  ) {
     // variable from the pattern or path
     // handler(context: Object, variable: string);
 
-    let availableRouteNames = Object.keys(this.availableRoutes);
+    let parsedPath = parsePath(path);
+    let route = this.availableRoutes[parsedPath.dir];
 
-    for (let routeName of availableRouteNames) {
-      if (path.startsWith(routeName)) {
-      }
-    }
-
-    let handler = this.availableRoutes[path];
-
-    if (handler) {
-      // handler(context);
+    if (route) {
+      let {handler} = route;
+      handler(context, parsedPath.file);
+    } else {
+      errorHandler(context);
     }
   }
 }

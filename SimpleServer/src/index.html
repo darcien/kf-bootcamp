@@ -3,8 +3,6 @@
 <form id='form' name='form'>
   <!-- <input name='file' type='file' accept='.jpg, .png, .mp3, .txt'><br> -->
   <input type='text' id='name' name='name' placeholder="Name"><br>
-  <input type='text' id='abc' name='abc' placeholder="Name"><br>
-  <input type='text' id='def' name='def' placeholder="Name"><br>
   <input type='text' id='age'name='age' placeholder="Age"><br>
   <input type='submit' name='submit'>
 </form>
@@ -33,7 +31,7 @@ async function sendJson(object) {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(object),
   });
 }
 
