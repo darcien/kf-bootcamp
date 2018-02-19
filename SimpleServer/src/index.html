@@ -1,0 +1,49 @@
+
+<!-- <form method='POST' action='/upload' enctype="multipart/form-data" target='_blank'> -->
+<form id='form' name='form'>
+  <!-- <input name='file' type='file' accept='.jpg, .png, .mp3, .txt'><br> -->
+  <input type='text' id='name' name='name' placeholder="Name"><br>
+  <input type='text' id='abc' name='abc' placeholder="Name"><br>
+  <input type='text' id='def' name='def' placeholder="Name"><br>
+  <input type='text' id='age'name='age' placeholder="Age"><br>
+  <input type='submit' name='submit'>
+</form>
+
+<script>
+let form = document.getElementById('form');
+let formData = {};
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  let formInput = event.target;
+
+  for (let input of formInput) {
+    let {name, type, value} = input;
+    if (input.type === 'submit') {
+      console.log('Submitted');
+      sendJson(formData);
+    } else {
+      formData[name] = value;
+    }
+  }
+});
+
+async function sendJson(object) {
+  fetch('/upload-json', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+}
+
+// let input = document.getElementById('file');
+// input.AddEventListener('change', (event) => {
+//   let file = event.target.files[0];
+//   sendFile(file);
+// });
+
+async function sendFile(file) {
+  //TODO Send file to server using fetch(...,{method:'POST'})
+}
+</script>
