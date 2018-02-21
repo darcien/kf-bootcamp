@@ -1,52 +1,51 @@
 // @flow
 
-import Router, {parsePath, parsePattern} from '../Router';
+import Router, {getPlaceholders, tryMatchPattern} from '../Router';
 
-describe('the parsePattern function', () => {
-  it('should parse root pattern', () => {
+describe('the getPlaceholders function', () => {
+  it('should get nothing from root pattern', () => {
     let pattern = '/';
-    let result = parsePattern(pattern);
-    let expectedResult = {pattern, base: pattern, placeholder: null};
-
-    expect(result).toEqual(expectedResult);
+    expect(getPlaceholders(pattern)).toEqual({});
   });
-  it('should parse the url without pattern', () => {
-    let pattern = '/upload-something';
-    let result = parsePattern(pattern);
-    let expectedResult = {pattern, base: pattern, placeholder: null};
-
-    expect(result).toEqual(expectedResult);
+  it('should get nothing from url without pattern', () => {
+    let pattern = '/upload/something';
+    expect(getPlaceholders(pattern)).toEqual({});
   });
-  it('should parse simple pattern', () => {
+  it('should get simple pattern', () => {
     let pattern = '/upload/:fileName';
-    let result = parsePattern(pattern);
-    let expectedResult = {pattern, base: '/upload', placeholder: 'fileName'};
-
-    expect(result).toEqual(expectedResult);
+    expect(getPlaceholders(pattern)).toEqual({[1]: 'fileName'});
+  });
+  it('should get advanced pattern', () => {
+    let pattern = '/something/:fileName/date/:year/index';
+    expect(getPlaceholders(pattern)).toEqual({
+      [1]: 'fileName',
+      [3]: 'year',
+    });
   });
 });
 
-describe('The parsePath function', () => {
-  it('should parse root path', () => {
-    let path = '/';
-    let result = parsePath(path);
-    let expectedResult = {path, dir: path, file: null};
-
-    expect(result).toEqual(expectedResult);
+describe('The tryMatchPattern function', () => {
+  it('shouldnt match wrong pattern', () => {
+    let pattern = '/api/users/:userName';
+    let path = '/api/users/';
+    expect(tryMatchPattern(pattern, path)).toEqual(null);
+    expect(tryMatchPattern('/foo', '/')).toEqual(null);
+    expect(tryMatchPattern('/foo/:bar', '/')).toEqual(null);
   });
-  it('should parse simple path', () => {
-    let path = '/abc/';
-    let result = parsePath(path);
-    let expectedResult = {path, dir: path, file: null};
-
-    expect(result).toEqual(expectedResult);
+  it('should match existing pattern', () => {
+    let pattern = '/api/:userType/home';
+    let path = '/api/users/home';
+    expect(tryMatchPattern(pattern, path)).toEqual({
+      userType: 'users',
+    });
   });
-  it('should parse simple path with filename', () => {
-    let path = '/upload/hello.txt';
-    let result = parsePath(path);
-    let expectedResult = {path, dir: '/upload', file: 'hello.txt'};
-
-    expect(result).toEqual(expectedResult);
+  it('should match existing pattern, again', () => {
+    let pattern = '/api/:userType/:userName';
+    let path = '/api/users/torvalds';
+    expect(tryMatchPattern(pattern, path)).toEqual({
+      userType: 'users',
+      userName: 'torvalds',
+    });
   });
 });
 
@@ -59,7 +58,7 @@ describe('The router class', () => {
 
     let context = {hello: 'world'};
     router.handleRequest('/', context);
-    expect(handler).toHaveBeenCalledWith(context, null);
+    expect(handler).toHaveBeenCalledWith(context);
   });
   it('should render simple path', () => {
     let router = new Router();
@@ -69,7 +68,7 @@ describe('The router class', () => {
 
     let context = {hello: 'world'};
     router.handleRequest('/upload/something', context);
-    expect(handler).toHaveBeenCalledWith(context, null);
+    expect(handler).toHaveBeenCalledWith(context);
   });
   it('should render simple path with pattern', () => {
     let router = new Router();
@@ -79,6 +78,49 @@ describe('The router class', () => {
 
     let context = {hello: 'world'};
     router.handleRequest('/upload/hai.txt', context);
-    expect(handler).toHaveBeenCalledWith(context, 'hai.txt');
+    expect(handler).toHaveBeenCalledWith(context, {file: 'hai.txt'});
+  });
+  it('should render path with multiple pattern', () => {
+    let router = new Router();
+    let handler = jest.fn();
+
+    router.addRoute('/api/:userType/:userName', handler);
+
+    let context = {hello: 'world'};
+    router.handleRequest('/api/orgs/kodefox', context);
+    expect(handler).toHaveBeenCalledWith(context, {
+      userType: 'orgs',
+      userName: 'kodefox',
+    });
+  });
+  it('shouldnt match root pattern', () => {
+    let router = new Router();
+    let results = [];
+
+    router.addRoute('/', () => {
+      results.push('one');
+    });
+    router.addRoute('/api/orgs/:userName', () => {
+      results.push('two');
+    });
+
+    let context = {hello: 'world'};
+    router.handleRequest('/api/orgs/kodefox', context);
+    expect(results).toEqual(['two']);
+  });
+  it('should call single handler', () => {
+    let router = new Router();
+    let results = [];
+
+    router.addRoute('/api/:userType/:userName', () => {
+      results.push('one');
+    });
+    router.addRoute('/api/orgs/:userName', () => {
+      results.push('two');
+    });
+
+    let context = {hello: 'world'};
+    router.handleRequest('/api/orgs/kodefox', context);
+    expect(results).toEqual(['one']);
   });
 });

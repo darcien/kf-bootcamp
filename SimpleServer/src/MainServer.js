@@ -21,8 +21,6 @@ let server = http.createServer();
 let router = new Router();
 
 function serveFile(request, response, fileName) {
-  console.log('Filename', fileName);
-
   let extension = fileName.split('.').pop();
 
   fs.readFile(join(assetsPath, fileName), (err, file) => {
@@ -45,7 +43,7 @@ function serveHomePage(request, response) {
   });
 }
 
-function serveNotFoundPage({request, response}, e = null) {
+function serveNotFoundPage({response}, e = null) {
   response.writeHead(404, 'Not here', {
     'Content-Type': 'text/plain',
   });
@@ -105,11 +103,16 @@ server.on('error', (error) => {
 });
 
 router.addRoute('/', ({response, request}) => {
+  console.log('Yo');
   serveHomePage(request, response);
 });
 
-router.addRoute('/files/:fileName', ({response, request}, fileName) => {
+router.addRoute('/files/:fileName', ({response, request}, {fileName}) => {
   serveFile(request, response, fileName);
+});
+
+router.addRoute('/api/:userType/:userName', ({response, request}) => {
+  serveHomePage(request, response);
 });
 
 router.addRoute('/upload', ({response, request}) => {
@@ -121,7 +124,7 @@ router.addRoute('/upload-json', ({response, request}) => {
 });
 
 server.on('request', (request, response) => {
-  router.handleRequest(request.url, {request, response}, serveNotFoundPage);
+  router.handleRequest(request.url, {request, response});
 });
 
 server.listen(8080, () => {

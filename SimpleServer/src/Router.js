@@ -2,67 +2,82 @@
 
 type Route = {
   pattern: string,
-  base: string,
-  placeholder: ?string,
+  placeholders: {[number]: string},
   handler: Function,
 };
 
-export function parsePattern(pattern: string) {
-  let parsedPattern = {pattern};
-  let splittedPattern = pattern.split(':');
-  if (splittedPattern.length > 1) {
-    parsedPattern = {
-      ...parsedPattern,
-      placeholder: splittedPattern.pop(),
-      base: splittedPattern.pop().slice(0, -1),
-    };
-    return parsedPattern;
-  } else {
-    return {pattern, base: pattern, placeholder: null};
+export function getPlaceholders(pattern: string) {
+  let splitPattern = pattern.slice(1).split('/');
+  let placeholders = {};
+
+  for (let i = 0; i < splitPattern.length; i++) {
+    let word = splitPattern[i];
+    if (word.startsWith(':')) {
+      placeholders[i] = word.replace(':', '');
+    }
   }
+
+  return placeholders;
 }
 
-export function parsePath(path: string) {
-  let parsedPath = {path};
-  let splittedPath = path.split('/');
-  if (!splittedPath.pop().includes('.')) {
-    parsedPath = {...parsedPath, dir: path, file: null};
-  } else {
-    let lastSlash = path.lastIndexOf('/');
-    parsedPath = {
-      ...parsedPath,
-      dir: path.substring(0, lastSlash),
-      file: path.substring(lastSlash + 1),
-    };
+export function tryMatchPattern(pattern: string, path: string) {
+  let splitPattern = pattern.slice(1).split('/');
+  let splitPath = path.slice(1).split('/');
+  let placeholders = getPlaceholders(pattern);
+  let pathData = {};
+
+  for (let i = 0; i < splitPattern.length; i++) {
+    let isMatch;
+    if (splitPattern[i].includes(':')) {
+      isMatch = true;
+      if (splitPath[i]) {
+        pathData[placeholders[i]] = splitPath[i];
+      }
+    } else {
+      isMatch = splitPattern[i] === splitPath[i];
+    }
+
+    if (!isMatch) {
+      return null;
+    }
   }
-  return parsedPath;
+  let pathDataNum = Object.keys(pathData).length;
+  return pathDataNum ? pathData : null;
 }
 
 export default class Router {
-  availableRoutes: {[routeName: string]: Route} = {};
+  availableRoutes: Array<Route> = [];
 
   addRoute(pattern: string, handler: Function) {
-    let parsedPattern = parsePattern(pattern);
-    let {base} = parsedPattern;
-    this.availableRoutes[base] = {...parsedPattern, handler};
+    this.availableRoutes.push({
+      pattern,
+      placeholders: getPlaceholders(pattern),
+      handler,
+    });
   }
 
-  handleRequest(
-    path: string,
-    context: Object,
-    errorHandler: Function = () => {},
-  ) {
+  handleRequest(path: string, context: Object) {
     // variable from the pattern or path
     // handler(context: Object, variable: string);
 
-    let parsedPath = parsePath(path);
-    let route = this.availableRoutes[parsedPath.dir];
+    let pathData = {};
 
-    if (route) {
-      let {handler} = route;
-      handler(context, parsedPath.file);
-    } else {
-      errorHandler(context);
+    for (let i = 0; i < this.availableRoutes.length; i++) {
+      let route = this.availableRoutes[i];
+      let {handler, pattern} = route;
+      if (pattern.split('/').length !== path.split('/').length) {
+        continue;
+      } else {
+        pathData = tryMatchPattern(pattern, path);
+      }
+
+      if (pathData != null) {
+        handler(context, pathData);
+        return;
+      } else {
+        handler(context);
+        return;
+      }
     }
   }
 }
