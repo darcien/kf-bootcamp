@@ -98,19 +98,11 @@ async function loginController(req: LoginReq, res: Res) {
         });
       } else {
         throw new Error('wrong password');
-        // res.status(403).json({
-        //   status: 'NOT OK',
-        //   message: {
-        //     text: 'Wrong pass.',
-        //     output: correctPassword,
-        //   },
-        // });
       }
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
       res.status(404).json({
         status: 'ERROR',
-        message: e.message,
+        message: err.message,
       });
     }
   }

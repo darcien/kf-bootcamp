@@ -6,10 +6,7 @@ export function ensureStringArray(input: mixed): Array<string> {
   } else {
     let stringArray: Array<string> = [];
     for (let item of input) {
-      if (typeof item !== 'string') {
-        // Or push empty string instead?
-        return [];
-      } else {
+      if (typeof item === 'string') {
         stringArray.push(item);
       }
     }
@@ -21,13 +18,9 @@ export function ensureArrayOf<T>(
   input: mixed,
   mapFunction: (mixed) => T,
 ): Array<T> {
-  if (!Array.isArray(input)) {
-    return [];
+  if (Array.isArray(input)) {
+    return input.map(mapFunction);
   } else {
-    let array: Array<T> = [];
-    for (let item of input) {
-      array.push(mapFunction(item));
-    }
-    return array;
+    return [];
   }
 }

@@ -10,6 +10,11 @@ describe('the ensureStringArray function', () => {
     expect(ensureStringArray('a')).toEqual([]);
     expect(ensureStringArray({a: 'b'})).toEqual([]);
   });
+  it('should return filtered input', () => {
+    let input = ['ab', 123, 'ac'];
+    let result = ['ab', 'ac'];
+    expect(ensureStringArray(input)).toEqual(result);
+  });
   it('should return the input', () => {
     let array = ['ab', 'ac'];
     expect(ensureStringArray(array)).toEqual(array);
@@ -18,23 +23,16 @@ describe('the ensureStringArray function', () => {
 
 describe('the ensureArrayOf function', () => {
   it('should return the same type', () => {
+    expect(ensureArrayOf(null, (x: mixed) => Number(x))).toEqual([]);
     expect(
-      ensureArrayOf(null, (x: mixed) => (typeof x === 'number' ? x : 0)),
-    ).toEqual([]);
-    expect(
-      ensureArrayOf(
-        [12, 3, 123, 12, 31, 23, 12],
-        (x: mixed) => (typeof x === 'number' ? x : 0),
-      ),
+      ensureArrayOf([12, 3, 123, 12, 31, 23, 12], (x: mixed) => Number(x)),
     ).toEqual([12, 3, 123, 12, 31, 23, 12]);
+    expect(ensureArrayOf(['a', 1], (x: mixed) => String(x))).toEqual([
+      'a',
+      '1',
+    ]);
     expect(
-      ensureArrayOf(['a', 1], (x: mixed) => (typeof x === 'string' ? x : '')),
-    ).toEqual(['a', '']);
-    expect(
-      ensureArrayOf(
-        [true, false, 'true'],
-        (x: mixed) => (typeof x === 'boolean' ? x : false),
-      ),
-    ).toEqual([true, false, false]);
+      ensureArrayOf([true, false, 'true'], (x: mixed) => Boolean(x)),
+    ).toEqual([true, false, true]);
   });
 });
