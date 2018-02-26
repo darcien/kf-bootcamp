@@ -8,6 +8,8 @@ import {SECRET} from '../globals/config';
 
 import UserModel from '../models/UserModel';
 
+const SEC = SECRET || 'blahblah';
+
 type SignupBody = {
   body: {
     name: ?string,
@@ -33,7 +35,7 @@ async function signupController(req: SignupReq, res: Res) {
   if (
     name === undefined ||
     email === undefined ||
-    password === undefined ||
+    password == null ||
     confirmationPassword === undefined
   ) {
     res.status(400).json({
@@ -56,8 +58,8 @@ async function signupController(req: SignupReq, res: Res) {
         password: hashedPassword,
       });
 
-      let token = jwt.sign({data: email}, SECRET, {expiresIn: '1h'});
-      jwt.verify(token, SECRET, (err, decoded) => {
+      let token = jwt.sign({data: email}, SEC, {expiresIn: '1h'});
+      jwt.verify(token, SEC, (err, decoded) => {
         if (err) {
           //Bla
         }
@@ -65,7 +67,7 @@ async function signupController(req: SignupReq, res: Res) {
       });
       res.status(200).json({
         status: 'OK',
-        token: jwt.sign({data: users._id}, SECRET, {expiresIn: '1h'}),
+        token: jwt.sign({data: users._id}, SEC, {expiresIn: '1h'}),
       });
     } catch (e) {
       res.status(500).json({
@@ -94,7 +96,7 @@ async function loginController(req: LoginReq, res: Res) {
           message: {
             output: correctPassword,
           },
-          token: jwt.sign({data: user._id}, SECRET, {expiresIn: '1h'}),
+          token: jwt.sign({data: user._id}, SEC, {expiresIn: '1h'}),
         });
       } else {
         throw new Error('wrong password');
