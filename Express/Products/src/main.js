@@ -20,3 +20,5 @@ app.use('/', mainRoute);
 app.listen(PORT, () => {
   console.log('Server listening on', PORT);
 });
+
+export {app};
