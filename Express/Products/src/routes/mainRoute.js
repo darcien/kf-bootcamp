@@ -1,6 +1,8 @@
 // @flow
 
 import {Router} from 'express';
+
+import validateProduct from '../validateProduct';
 import productsController from '../controllers/productsController';
 
 let mainRoute = Router();
@@ -10,10 +12,10 @@ mainRoute.get('/products', productsController.getProduct);
 mainRoute.get('/products/:id', productsController.getProductById);
 
 // post
-mainRoute.post('/products', productsController.postProduct);
+mainRoute.post('/products', validateProduct, productsController.postProduct);
 
 // put
-mainRoute.put('/products/:id', productsController.putProduct);
+mainRoute.put('/products/:id', validateProduct, productsController.putProduct);
 
 // delete
 mainRoute.delete('/products/:id', productsController.deleteProduct);

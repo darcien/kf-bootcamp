@@ -1,6 +1,7 @@
 //@flow
 
 import {randomId} from '../helpers/randomId';
+import {validationResult} from 'express-validator/check';
 
 import type {$Request as Req, $Response as Res} from 'express';
 
@@ -14,10 +15,10 @@ type Product = {
 
 type ReqBody = {
   body: {
-    name: ?string,
-    description: ?string,
-    price: ?number,
-    photo: ?string,
+    name: string,
+    description: string,
+    price: number,
+    photo: string,
   },
   params: {
     id: string,
@@ -65,22 +66,10 @@ async function getProductById(req: Req, res: Res) {
 
 async function postProduct(req: PostReq, res: Res) {
   let {name, description, price, photo} = req.body;
+  let errors = validationResult(req);
 
-  if (name == null || description == null || price == null || photo == null) {
-    res.status(400).json({
-      status: 'ERROR',
-      message: 'Incomplete request',
-    });
-  } else if (
-    typeof name !== 'string' ||
-    typeof description !== 'string' ||
-    typeof price !== 'number' ||
-    typeof photo !== 'string'
-  ) {
-    res.status(400).json({
-      status: 'ERROR',
-      message: 'Bad request',
-    });
+  if (!errors.isEmpty()) {
+    return res.status(422).json({errors: errors.mapped()});
   } else {
     mockData.push({
       id: randomId(),
@@ -98,22 +87,10 @@ async function postProduct(req: PostReq, res: Res) {
 
 async function putProduct(req: PostReq, res: Res) {
   let {name, description, price, photo} = req.body;
+  let errors = validationResult(req);
 
-  if (name == null || description == null || price == null || photo == null) {
-    res.status(400).json({
-      status: 'ERROR',
-      message: 'Incomplete request',
-    });
-  } else if (
-    typeof name !== 'string' ||
-    typeof description !== 'string' ||
-    typeof price !== 'number' ||
-    typeof photo !== 'string'
-  ) {
-    res.status(400).json({
-      status: 'ERROR',
-      message: 'Bad request',
-    });
+  if (!errors.isEmpty()) {
+    return res.status(422).json({errors: errors.mapped()});
   } else {
     for (let i = 0; i < mockData.length; i++) {
       let product = mockData[i];
@@ -129,6 +106,7 @@ async function putProduct(req: PostReq, res: Res) {
           status: 'OK',
           message: 'Product updated',
         });
+        return;
       }
     }
     res.status(400).send({status: 'ERROR', message: 'Product not found'});
@@ -147,6 +125,7 @@ async function deleteProduct(req: Req, res: Res) {
       status: 'OK',
       message: 'Product removed',
     });
+    return;
   }
 
   res.status(400).send({status: 'ERROR', message: 'Product not found'});

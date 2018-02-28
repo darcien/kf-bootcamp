@@ -2,6 +2,8 @@ import chai from 'chai';
 
 import chaiHttp from 'chai-http';
 
+/*eslint-disable*/
+
 chai.should();
 chai.use(chaiHttp);
 
