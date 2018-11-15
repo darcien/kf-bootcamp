@@ -9,15 +9,16 @@ let user = {
   },
 };
 
-//Without desctructuring
+// Without destructuring
 let daddy4 = user.parent.dad;
 
-// Destructuring
+// With destructuring
 let {parent: hisParrent} = user;
 let {dad: daddy} = hisParrent;
 // or one liner version
 // Can't rename except for the last part in one liner
 let {parent: {dad: daddy2}} = user;
+
 console.log(daddy === daddy2 && daddy === daddy4);
 
 let {...newParent} = user.parent;
